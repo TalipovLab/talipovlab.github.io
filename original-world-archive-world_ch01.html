@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head>
+<meta charset="utf-8">
+<title>States of a Model System · Talipov Lab</title>
+
+<meta name="theme-color" content="#008800"/>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="assets/export/3171dd0679483c47b417.css"/>
+
+
+
+
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/group-logo.png" type="image/png">
+<link rel="stylesheet" href="assets/public.css">
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<script src="assets/public.js" defer></script>
+<script src="assets/katex/katex.min.js" defer></script>
+<script src="assets/katex/contrib/auto-render.min.js" defer></script>
+<script src="assets/math-render.js" defer></script>
+<link rel="canonical" href="https://talipovlab.github.io/original-world-archive-world_ch01.html">
+<meta name="description" content="Computational chemistry, research, publications, and interactive teaching tools from the Talipov Lab at New Mexico State University.">
+<meta name="robots" content="noindex,follow">
+</head>
+<body id="group-site" class="tg-public">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead"><div class="wrap header-inner">
+<a class="brand" href="index.html"><img class="original-logo" src="assets/group-logo.png" width="64" height="64" alt="Talipov Lab emblem"><span><strong>Talipov Lab</strong><small>Computational Chemistry<br>New Mexico State University</small></span></a>
+<button class="menu-button" aria-controls="main-nav" aria-expanded="false">Menu</button>
+<nav id="main-nav" aria-label="Main navigation">
+<a href="research.html">Research</a><a href="people.html">People</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="teaching.html">Teaching</a><a href="resources.html">Resources</a><a href="join.html" class="nav-join">Join us</a></nav></div></header>
+<main id="main" class="dokuwiki"><div class="wrap">
+<div class="archive-notice"><strong>From the original group website</strong><p>Historical material: this page preserves earlier wording and attributions. Advice may be superseded, data outdated, links unavailable, and events past. Use the current teaching guides for study and planning.</p><a href="resources.html">Browse resources</a> · <a href="teaching.html">Current teaching guides</a> · <a href="research.html">Current research</a></div><div class="archive-content"><div class="page">
+
+
+<h1 class="sectionedit1" id="states_of_a_model_system">States of a Model System</h1>
+<div class="level1">
+
+</div>
+
+<h2 class="sectionedit2" id="binary_systems">Binary systems</h2>
+<div class="level2">
+
+<p>
+Consider a collection of non-interacting particles, where each particle can be found in one of two quantum states. As an example, we will deal with <em>N</em> elementary magnets that could have their spins oriented up or down (another example: flipping a coin). The magnetic moment of an individual magnet is <em>+m</em> if the magnet is pointing up and <em>-m</em> if it is pointing down. The total number of configurations is $2^N$ while the total number of possible momenta of the entire system is $N+1$ (that is, $-Nm, -(N-2)m, ..., +Nm$).
+</p>
+
+<p>
+The spin excess of the system is equal to:
+</p>
+
+<p>
+$N_{up} - N_{down} = 2s$,
+</p>
+
+<p>
+where $N_{up}$ and $N_{down}$ are the number of magnets with spin up and down, respectively. Spin excess is defined as $2s$ instead of $s$ for convenience. It is easy to show that:
+</p>
+
+<p>
+$N_{up} + N_{down} = N$
+</p>
+
+<p>
+$N_{up} =N/2 + s$
+</p>
+
+<p>
+$N_{down} =N/2 - s$
+</p>
+
+<p>
+The number of possible states with a specific spin excess can be evaluated using a simple formula from combinatorics:
+</p>
+
+<p>
+$g(N,s) = \frac {N!} {N_{up}! N_{down}!}.$
+</p>
+
+<p>
+The function <em>g</em> is called a multiplicity function. The multiplicity function forms a Gaussian distribution for <em>s</em>:
+</p>
+
+<p>
+$g(N,s) \approx g(N,0) exp(-2s^2/N)$
+</p>
+
+<p>
+$g(N,0) = \frac {N!} { (N/2)! (N/2)! } \approx \sqrt \frac 2 {\pi N} 2^N $
+</p>
+<div class="hiddenGlobal  hiddenActive"><div class="hiddenElements"></div><div class="hiddenHead  hiddenSinceBeginning"><div class="hiddenOnHidden">
+<p>
+Derivation
+</p>
+</div><div class="hiddenOnVisible">
+<p>
+Derivation
+</p>
+</div></div> <!-- .hiddenHead --><div class="hiddenBody">
+<p>
+We will use the Stirling approximation:
+</p>
+
+<p>
+$ ln (N!) \approx 1/2 ln (2\pi) + (N+1/2) ln N - N$
+</p>
+</div></div>
+</div>
+</div>
+</div></div></main>
+<footer class="footer"><div class="wrap"><div class="footer-grid">
+<div><p class="footer-name">Talipov Lab</p><p>Computational chemistry at New Mexico State University.<br>Department of Chemistry and Biochemistry · Las Cruces, NM</p></div>
+<div><h3>Explore</h3><div class="footer-links"><a href="research.html">Research</a><a href="people.html">People</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="teaching.html">Teaching</a><a href="resources.html">Resources</a><a href="join.html">Join us</a></div></div>
+<div><h3>Get in touch</h3><p><a href="mailto:talipovm@nmsu.edu">talipovm@nmsu.edu</a><br><a href="https://chemistry.nmsu.edu/">NMSU Chemistry &amp; Biochemistry</a></p></div>
+</div><div class="footer-bottom"><span>© 2026 Talipov Lab</span><span><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> · Edited with DokuWiki · Hosted on GitHub Pages</span></div></div></footer>
+<div id="screen__mode" class="no"></div>
+</body></html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head>
+<meta charset="utf-8">
+<title>Two-state magnetic systems · Talipov Lab</title>
+
+<meta name="theme-color" content="#008800"/>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="assets/export/3171dd0679483c47b417.css"/>
+
+
+
+
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/group-logo.png" type="image/png">
+<link rel="stylesheet" href="assets/public.css">
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<script src="assets/public.js" defer></script>
+<script src="assets/katex/katex.min.js" defer></script>
+<script src="assets/katex/contrib/auto-render.min.js" defer></script>
+<script src="assets/math-render.js" defer></script>
+<link rel="canonical" href="https://talipovlab.github.io/binary-systems.html">
+<meta name="description" content="Computational chemistry, research, publications, and interactive teaching tools from the Talipov Lab at New Mexico State University.">
+<meta name="robots" content="index,follow">
+</head>
+<body id="group-site" class="tg-public">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead"><div class="wrap header-inner">
+<a class="brand" href="index.html"><img class="original-logo" src="assets/group-logo.png" width="64" height="64" alt="Talipov Lab emblem"><span><strong>Talipov Lab</strong><small>Computational Chemistry<br>New Mexico State University</small></span></a>
+<button class="menu-button" aria-controls="main-nav" aria-expanded="false">Menu</button>
+<nav id="main-nav" aria-label="Main navigation">
+<a href="research.html">Research</a><a href="people.html">People</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="teaching.html">Teaching</a><a href="resources.html">Resources</a><a href="join.html" class="nav-join">Join us</a></nav></div></header>
+<main id="main" class="dokuwiki"><div class="wrap">
+<div class="page">
+
+<div class="wrap learning-guide plugin_wrap"><div class="page-intro plugin_wrap"><div class="eyebrow plugin_wrap">
+<p>
+Teaching &amp; learning
+</p>
+</div>
+<h1 class="sectionedit7" id="two-state_magnetic_systems">Two-state magnetic systems</h1>
+<div class="lead plugin_wrap">
+<p>
+Counting microstates, total magnetic moments, and multiplicities.
+</p>
+</div></div><div class="learning-section plugin_wrap">
+<h2 class="sectionedit12" id="the_model_and_its_states">The model and its states</h2>
+
+<p>
+Consider \(N\) distinguishable, noninteracting magnetic moments. Each has a projection \(+\mu\) or \(-\mu\) along a chosen axis. A microstate specifies the orientation of every moment; there are \(2^N\) such microstates. Here \(M\) denotes the total magnetic moment along that axis, not momentum or magnetization per unit volume.
+</p>
+
+<p>
+Let \(N_{\uparrow}\) and \(N_{\downarrow}\) count the two orientations:
+</p>
+<div class="learning-formula plugin_wrap">
+<p>
+\[N_{\uparrow}+N_{\downarrow}=N\]
+</p>
+</div><div class="learning-formula plugin_wrap">
+<p>
+\[2s=N_{\uparrow}-N_{\downarrow}\]
+</p>
+</div><div class="learning-formula plugin_wrap">
+<p>
+\[M=2\mu s\]
+</p>
+</div>
+<p>
+Thus \(s\) runs from \(-N/2\) to \(N/2\) in steps of one, giving \(N+1\) possible values of \(M\). For even \(N\), \(s\) is an integer and includes zero. For odd \(N\), \(s\) is a half-integer and zero is not allowed.
+</p>
+</div><div class="learning-section plugin_wrap">
+<h2 class="sectionedit21" id="multiplicityhow_many_microstates">Multiplicity: how many microstates?</h2>
+
+<p>
+Choosing which \(N_{\uparrow}\) moments point up gives the multiplicity \(g\):
+</p>
+<div class="learning-formula plugin_wrap">
+<p>
+\[g(N,s)=\binom{N}{N_{\uparrow}}\]
+</p>
+</div><div class="learning-formula plugin_wrap">
+<p>
+\[g(N,s)=\frac{N!}{N_{\uparrow}!\,N_{\downarrow}!}\]
+</p>
+</div>
+<p>
+The populations in the denominator are
+</p>
+<div class="learning-formula plugin_wrap">
+<p>
+\[N_{\uparrow}=\frac{N}{2}+s\]
+</p>
+</div><div class="learning-formula plugin_wrap">
+<p>
+\[N_{\downarrow}=\frac{N}{2}-s\]
+</p>
+</div>
+<p>
+Both populations are integers, including when \(s\) is a half-integer.
+</p>
+
+<h3 class="sectionedit30" id="examplefour_moments">Example: four moments</h3>
+<ul>
+<li class="level1"><div class="li"> \(N_{\uparrow}=0\): \(s=-2\), \(M=-4\mu\), \(g=1\).</div>
+</li>
+<li class="level1"><div class="li"> \(N_{\uparrow}=1\): \(s=-1\), \(M=-2\mu\), \(g=4\).</div>
+</li>
+<li class="level1"><div class="li"> \(N_{\uparrow}=2\): \(s=0\), \(M=0\), \(g=6\).</div>
+</li>
+<li class="level1"><div class="li"> \(N_{\uparrow}=3\): \(s=1\), \(M=2\mu\), \(g=4\).</div>
+</li>
+<li class="level1"><div class="li"> \(N_{\uparrow}=4\): \(s=2\), \(M=4\mu\), \(g=1\).</div>
+</li>
+</ul>
+
+<p>
+The multiplicities sum to \(16=2^4\). There are five possible total moments, but sixteen microstates.
+</p>
+</div><div class="learning-section plugin_wrap">
+<h2 class="sectionedit33" id="when_is_multiplicity_a_probability">When is multiplicity a probability?</h2>
+
+<p>
+If all \(2^N\) microstates are equally likely,
+</p>
+<div class="learning-formula plugin_wrap">
+<p>
+\[P(s)=\frac{g(N,s)}{2^N}\]
+</p>
+</div>
+<p>
+This assumption is appropriate for the noninteracting model at zero field. It is not generally valid in a nonzero field at finite temperature, where different orientations have different energies and require the appropriate Boltzmann weights.
+</p>
+</div><div class="learning-section plugin_wrap">
+<h2 class="sectionedit38" id="a_useful_large-n_approximation">A useful large-N approximation</h2>
+
+<p>
+For large \(N\) and \(s\) near the center of the distribution, the binomial multiplicity has the Gaussian approximation:
+</p>
+<div class="learning-formula plugin_wrap">
+<p>
+\[g(N,s)\approx 2^N\sqrt{\frac{2}{\pi N}}\,e^{-2s^2/N}\]
+</p>
+</div>
+<p>
+This is an approximation to the central region, not an exact formula or a reliable description near complete alignment. Use the exact binomial expression for small \(N\) or tail probabilities.
+</p>
+
+<h3 class="sectionedit41" id="check_your_understanding">Check your understanding</h3>
+<ul>
+<li class="level1"><div class="li"> For \(N=3\), list the allowed \(s\) values and their multiplicities. Why is \(M=0\) impossible?</div>
+</li>
+<li class="level1"><div class="li"> Explain why equal probabilities for individual microstates do not imply equal probabilities for the \(N+1\) total moments.</div>
+</li>
+<li class="level1"><div class="li"> For \(N=4\) with equiprobable microstates, the probability of \(M=0\) is \(6/16\), not \(1/5\).</div>
+</li>
+</ul>
+</div><div class="note-section plugin_wrap">
+<p>
+The previous version is retained for historical context; use the revised guidance above for current study.
+</p>
+
+<p>
+<a href="original-world-archive-world_ch01.html" class="wikilink1" title="world:archive:world_ch01" data-wiki-id="world:archive:world_ch01">Historical version</a>
+</p>
+</div><div class="small muted plugin_wrap">
+<p>
+Resources reviewed 18 November 2026. Course requirements and program details can change; consult the linked official pages.
+</p>
+</div>
+<p>
+<a href="teaching.html" class="wikilink1" title="world:teaching_resources" data-wiki-id="world:teaching_resources">Back to teaching resources</a>
+</p>
+</div></div>
+</div></main>
+<footer class="footer"><div class="wrap"><div class="footer-grid">
+<div><p class="footer-name">Talipov Lab</p><p>Computational chemistry at New Mexico State University.<br>Department of Chemistry and Biochemistry · Las Cruces, NM</p></div>
+<div><h3>Explore</h3><div class="footer-links"><a href="research.html">Research</a><a href="people.html">People</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="teaching.html">Teaching</a><a href="resources.html">Resources</a><a href="join.html">Join us</a></div></div>
+<div><h3>Get in touch</h3><p><a href="mailto:talipovm@nmsu.edu">talipovm@nmsu.edu</a><br><a href="https://chemistry.nmsu.edu/">NMSU Chemistry &amp; Biochemistry</a></p></div>
+</div><div class="footer-bottom"><span>© 2026 Talipov Lab</span><span><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> · Edited with DokuWiki · Hosted on GitHub Pages</span></div></div></footer>
+<div id="screen__mode" class="no"></div>
+</body></html>

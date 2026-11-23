@@ -1,0 +1,515 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Direct kinetics solver · Talipov Lab</title><style>body{margin:0;padding:32px 4vw;background:#fff;color:#252d27;font:16px/1.6 Arial,sans-serif}main{max-width:1280px;margin:auto}h1{font-size:clamp(28px,5vw,44px);line-height:1.2}a{color:#315d25}.kinetics-app{--kin-green:#315d25;--kin-border:#d8e1d4;--kin-muted:#58645c;color:#252d27;font:16px/1.6 Arial,sans-serif;margin:25px 0 60px}
+.kinetics-app *{box-sizing:border-box}.kinetics-app [hidden]{display:none!important}
+.kinetics-app h2{font-size:24px;line-height:1.3;letter-spacing:-.025em;margin:0 0 18px}.kinetics-app h3{font-size:18px;margin:25px 0 10px}
+.kin-intro-note{padding:14px 18px;border-left:3px solid #769568;background:#f2f6ef;margin:0 0 24px}
+.kin-toolbar,.kin-actions{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.kin-toolbar{padding-bottom:24px;border-bottom:1px solid var(--kin-border);margin-bottom:30px}.kin-toolbar>label:first-child{min-width:240px;flex:1;max-width:360px}
+.kinetics-app label{display:block;font-size:14px;font-weight:600;margin:0 0 7px}.kinetics-app input,.kinetics-app select,.kinetics-app textarea{font:16px/1.4 Arial,sans-serif;color:#222;background:#fff;border:1px solid #a8b7a2;border-radius:3px;padding:9px 11px;width:100%;margin:6px 0 0;min-height:42px}.kinetics-app textarea{resize:vertical;min-height:120px;font:16px/1.7 monospace}
+.kinetics-app input[type=checkbox]{width:18px;min-height:18px;height:18px;margin:0 5px 0 0;vertical-align:middle;accent-color:var(--kin-green)}
+.kinetics-app button,.kin-file-button{display:inline-block;font:600 14px/1.4 Arial,sans-serif;border:1px solid #708a63;border-radius:3px;background:#fff;color:var(--kin-green);padding:11px 16px;min-height:43px;cursor:pointer;margin:0;text-align:center}.kinetics-app button:hover,.kin-file-button:hover{background:#edf3e8}.kinetics-app button:disabled{opacity:.55;cursor:wait}.kinetics-app .kin-primary{background:#37632d;color:#fff}.kinetics-app .kin-primary:hover{background:#284a20}.kinetics-app :focus-visible{outline:3px solid #9f4567;outline-offset:3px}.kin-file-button input{position:absolute;width:1px;height:1px;opacity:0;min-height:0;padding:0}.kin-file-button:focus-within{outline:3px solid #9f4567;outline-offset:3px}
+.kin-workspace{display:grid;grid-template-columns:minmax(280px,350px) minmax(0,1fr);gap:32px;align-items:start}.kin-inputs{padding:24px;background:#f5f8f2;border:1px solid var(--kin-border);min-width:0}.kin-results{min-width:0}.kin-results-heading{display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between;align-items:center}.kin-results-heading h2{margin:0}.kin-results-heading label{font-size:13px;font-weight:400;margin:0}.kinetics-app .kin-help{font-size:13px;line-height:1.65;color:var(--kin-muted);margin:10px 0 16px}.kinetics-app code{font-size:13px;padding:2px 4px;background:#e8eee3;color:#283e23;white-space:normal}.kin-unit{font-size:14px;font-weight:400}
+.kin-rate{border-bottom:1px solid var(--kin-border);padding:10px 0}.kin-rate-label{font-size:14px;font-weight:600;overflow-wrap:anywhere}.kin-rate-law{font-size:13px;color:var(--kin-muted);margin:4px 0}.kin-rate .kin-rate-input{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.kin-rate-input label{margin:0}.kin-rate-input input{margin:4px 0 0}.kin-rate-unit{font-size:12px;max-width:85px;line-height:1.4}.kin-initial-grid,.kin-time-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}.kin-time-grid{margin-top:22px}.kin-initial-grid label{overflow-wrap:anywhere}.kin-details{border-top:1px solid var(--kin-border);padding:18px 0;margin-top:22px}.kin-details summary{font-weight:600;cursor:pointer;color:var(--kin-green)}.kin-details p{font-size:14px;line-height:1.75}.kin-details a{color:var(--kin-green);text-decoration:underline}.kin-assumptions{margin-top:35px;max-width:960px}.kin-actions{margin-top:20px}
+#kin-status{font-size:14px;min-height:24px;color:var(--kin-muted);margin:16px 0}#kin-error{padding:15px;border-left:3px solid #9a284e;background:#fff0f4;color:#78213e;overflow-wrap:anywhere}
+.kin-legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:10px 0}.kin-legend label{font-weight:400;font-size:14px;display:flex;align-items:center;gap:5px}.kin-swatch{width:22px;height:4px;display:inline-block}.kin-chart{width:100%;border:1px solid var(--kin-border);background:#fff;padding:4px}.kin-chart svg{display:block;width:100%;height:auto;touch-action:pan-y;cursor:crosshair}.kinetics-app .kin-cursor-label{font-size:14px;margin-top:16px}#kin-time{padding:0;accent-color:var(--kin-green);min-height:28px;margin:0}
+.kin-table-scroll{overflow:auto;max-height:310px}.kinetics-app .kin-table{border-collapse:collapse;width:100%;font-size:13px;table-layout:auto}.kin-table caption{text-align:left;font-size:13px;color:var(--kin-muted);padding:6px 0}.kinetics-app .kin-table th,.kinetics-app .kin-table td{padding:8px 10px;border:0;border-bottom:1px solid var(--kin-border);white-space:nowrap;text-align:right}.kinetics-app .kin-table th:first-child,.kinetics-app .kin-table td:first-child{text-align:left}.kinetics-app .kin-table th{background:#f1f5ee;font-weight:600;position:sticky;top:0}.kin-table tbody th{position:static!important;background:#fff!important}
+@media(max-width:950px){.kin-workspace{grid-template-columns:300px minmax(0,1fr);gap:20px}.kin-inputs{padding:18px}.kin-results-heading{display:block}.kin-results-heading label{margin-top:10px}}
+@media(max-width:760px){.kin-workspace{grid-template-columns:1fr}.kin-inputs{padding:20px}.kin-toolbar{gap:10px}.kin-toolbar>label:first-child{max-width:none;flex-basis:100%}.kinetics-app h2{font-size:23px}.kin-chart svg{min-height:240px}.kin-actions button{flex:1}.kin-results{margin-top:8px}}
+
+.kinetics-app .kin-file-button{margin:0}.kinetics-app .kin-offline-link{color:var(--kin-green);text-decoration:underline;font-size:14px;padding:10px 0}.kin-legend label{max-width:100%;min-width:0;overflow-wrap:anywhere}.kin-swatch,.kin-legend input[type=checkbox]{flex-shrink:0}
+
+.kin-example-note{border-left:3px solid #7c8c67;background:#f4f6ef;padding:20px 24px;margin:0 0 28px}.kinetics-app .kin-example-note h3{margin:0 0 10px;font-size:20px}.kinetics-app .kin-example-note p{font-size:14px;line-height:1.7;margin:10px 0}.kin-example-note a{color:var(--kin-green);text-decoration:underline}.kin-ee{background:#f2f6ee;border:1px solid var(--kin-border);padding:16px 18px;margin:20px 0}.kinetics-app .kin-ee h3{margin:0 0 8px}.kinetics-app .kin-ee p{font-size:13px;margin:6px 0 14px}.kin-ee dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0}.kin-ee dt{font-size:12px;font-weight:400;color:var(--kin-muted)}.kin-ee dd{font-size:18px;font-weight:600;margin:4px 0 0;overflow-wrap:anywhere}@media(max-width:480px){.kin-example-note{padding:16px}.kin-ee dl{grid-template-columns:1fr}.kin-ee dl>div{display:flex;justify-content:space-between;gap:10px}.kin-ee dd{margin:0;font-size:16px}}
+
+.kin-phase-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}.kinetics-app .kin-phase-trim{font-weight:400;margin:10px 0 15px}.kin-phase summary{margin-bottom:14px}.kin-phase-chart{margin-top:12px}
+
+/* Collapsible controls and a two-plot comparison layout. */
+.kinetics-app summary{cursor:pointer;color:var(--kin-green);font-weight:600;list-style:disclosure-closed inside}
+.kinetics-app details[open]>summary{list-style:disclosure-open inside}
+.kinetics-app .kin-example-note>summary{font-size:20px;line-height:1.45}
+.kin-example-note{padding:16px 20px;margin-bottom:18px}
+.kin-example-note:not([open]){background:#f8faf5}
+.kin-panel>summary{font-size:20px;line-height:1.4}
+.kin-input-body{padding-top:12px}
+.kin-subpanel{margin:12px 0;border-top:1px solid var(--kin-border);padding-top:12px}
+.kin-subpanel>summary{font-size:14px;margin-bottom:12px}
+.kin-inputs-folded .kin-workspace{grid-template-columns:minmax(0,1fr);gap:12px}
+.kin-inputs:not([open]){padding:12px 18px}
+.kin-scenarios{padding:0 0 18px}
+.kinetics-app .kin-scenarios h3{font-size:16px;margin:0 0 10px}
+.kin-scenario-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.kinetics-app .kin-scenario-buttons button[aria-pressed=true]{background:#37632d;color:#fff;border-color:#37632d}
+.kinetics-app #kin-scenario-description{margin:10px 0 0;font-size:14px;line-height:1.65;max-width:1000px}
+.kin-viewbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 20px}
+.kin-viewbar span{font-size:14px;color:var(--kin-muted)}
+.kin-plot-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;scroll-margin-top:18px}
+.kin-plot-panel{min-width:0;border-top:1px solid var(--kin-border);padding-top:12px}
+.kin-plot-panel>summary{font-size:20px;line-height:1.4;margin-bottom:12px}
+.kin-time-options{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0}
+.kin-time-options .kin-legend{margin:0}
+.kin-time-options>label{font-size:14px;font-weight:400;margin:0}
+.kin-compare .kin-plot-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.kin-compare .kin-chart svg{min-height:0}
+.kin-compare .kin-time-options{min-height:42px;margin:0 0 12px}
+.kin-compare #kin-phase-settings:not([open]){border-top:0;padding-top:0;margin:0 0 12px;min-height:42px;display:flex;align-items:center}
+.kin-compare #kin-phase-settings:not([open])>summary{margin:0}
+.kinetics-app #kin-values>summary{margin-bottom:12px}
+.kinetics-app #kin-status{margin:6px 0 12px}
+@media(max-width:900px){.kin-compare .kin-plot-grid{grid-template-columns:minmax(0,1fr)}}
+
+.kin-compare.kin-single-species .kin-plot-grid{grid-template-columns:minmax(0,1fr)}
+
+/* Make custom modeling a visible starting point alongside the examples. */
+.kin-start-options{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:0 0 20px}
+.kin-start-card{min-width:0;border:1px solid var(--kin-border);padding:24px;display:flex;flex-direction:column;align-items:start}
+.kin-custom-card{background:#f3f7ee;border-top:3px solid #37632d}
+.kinetics-app .kin-start-card h2{font-size:24px;margin:0 0 12px}
+.kinetics-app .kin-start-card p{font-size:16px;line-height:1.65;margin:0 0 20px}
+.kin-start-card>button,.kin-example-picker{margin-top:auto}
+.kin-example-picker{display:flex;align-items:end;gap:12px;width:100%;flex-wrap:wrap}
+.kin-example-picker label{flex:1;min-width:190px;margin:0}
+.kin-example-picker select{margin-bottom:0}
+.kin-example-picker button{flex-shrink:0}
+.kinetics-app .kin-custom-guide{border-bottom:1px solid var(--kin-border);padding:0 0 16px;margin-bottom:18px}
+.kinetics-app .kin-custom-guide h3{margin:0 0 8px;font-size:18px}
+.kinetics-app .kin-custom-guide p{font-size:14px;line-height:1.6;margin:0 0 12px}
+.kinetics-app .kin-custom-guide ol{list-style:decimal outside;padding-left:22px;margin:16px 0 0;font-size:14px}
+.kinetics-app .kin-custom-guide li{display:list-item;margin:8px 0;line-height:1.6}
+.kin-custom-mode #kin-input-panel{border-left:3px solid #37632d}
+.kinetics-app textarea::placeholder{color:#64705e;opacity:1}
+@media(max-width:760px){.kin-start-options{grid-template-columns:minmax(0,1fr);gap:14px}.kin-start-card{padding:20px}.kin-example-picker{gap:10px}.kin-example-picker label{min-width:0;flex-basis:100%}}
+</style></head><body><main><p>Talipov Lab · NMSU</p><h1>Direct kinetics solver</h1><p>Enter elementary reaction steps, set the rate constants and initial concentrations, and follow the concentrations over time. This standalone edition needs no internet connection.</p><div id="kinetics-app" class="kinetics-app">
+  <div class="kin-intro-note">Calculations run in your browser. Your mechanism and results are not sent to a server.</div>
+  <div class="kin-start-options" aria-label="Choose how to begin">
+    <section class="kin-start-card kin-custom-card" aria-labelledby="kin-custom-title"><h2 id="kin-custom-title">Your reactions. Your model.</h2><p>Write your own network of elementary reactions, with your own species, rate constants, and initial concentrations.</p><button type="button" id="kin-custom" class="kin-primary" aria-controls="kin-input-panel">Build your own mechanism</button></section>
+    <section class="kin-start-card" aria-labelledby="kin-examples-title"><h2 id="kin-examples-title">Explore a worked example</h2><p>Try a teaching model and its scenarios. Every example can also be edited into your own mechanism.</p><div class="kin-example-picker"><label for="kin-example">Start from an example<select id="kin-example" aria-label="Start from an example"><option value="chirality">Chiral amplification — Nobel 2026</option><option value="consecutive" selected>Consecutive reactions</option><option value="equilibrium">Equilibrium</option><option value="parallel">Parallel reactions</option><option value="enzyme">Michaelis–Menten mechanism</option><option value="dimer">Dimerization</option><option value="stiff">Fast and slow reactions</option><option value="lotka">Lotka–Volterra: predator and prey</option><option value="brusselator">Brusselator: a limit-cycle attractor</option><option value="oregonator">BZ reaction: the Oregonator</option></select></label><button type="button" id="kin-load-example">Load example</button></div></section>
+  </div>
+  <div class="kin-toolbar"><button type="button" id="kin-save">Save model</button><label class="kin-file-button" for="kin-import">Open model<input type="file" id="kin-import" accept=".json,application/json"></label></div>
+  <details id="kin-note-consecutive" class="kin-example-note" data-example="consecutive" hidden aria-labelledby="kin-note-consecutive-title" open><summary id="kin-note-consecutive-title">Consecutive reactions: the rise and fall of an intermediate</summary><p>A first forms B, which then forms C. B is an intermediate: it builds up while its formation is faster than its consumption, then falls as A runs out. With both preset rate constants equal to 1 s<sup>−1</sup>, B reaches its maximum at 1 s and C eventually accumulates.</p><p>Try increasing the second rate constant to make B shorter-lived, or decreasing it to let B accumulate. Compare the height and timing of the B peak. The total [A] + [B] + [C] stays constant in this model.</p></details>
+  <details id="kin-note-equilibrium" class="kin-example-note" data-example="equilibrium" hidden aria-labelledby="kin-note-equilibrium-title" open><summary id="kin-note-equilibrium-title">Reversible reactions: a dynamic equilibrium</summary><p>A and B continually interconvert. At equilibrium the forward and reverse rates balance, so the concentrations stop changing even though both reactions continue. The preset starts with A = 1 mol/L and B = 0; equal rate constants lead to 0.5 mol/L of each.</p><p>Try doubling the forward rate constant: the final ratio [B]/[A] approaches <var>k</var><sub>forward</sub>/<var>k</var><sub>reverse</sub> = 2. Alternatively, multiply both constants by ten: the same equilibrium is reached more quickly.</p></details>
+  <details id="kin-note-parallel" class="kin-example-note" data-example="parallel" hidden aria-labelledby="kin-note-parallel-title" open><summary id="kin-note-parallel-title">Parallel reactions: competing pathways</summary><p>A can become either B or C. Both pathways consume the same starting material, and their relative rate constants determine how it is divided between the products. With the two preset constants equal, B and C approach equal final concentrations.</p><p>Try changing the rate constant for A → C from 1 to 3 s<sup>−1</sup>. Of the A that reacts, one quarter becomes B and three quarters become C. A disappears with a combined first-order rate constant equal to the sum of the two pathway constants.</p></details>
+  <details id="kin-note-enzyme" class="kin-example-note" data-example="enzyme" hidden aria-labelledby="kin-note-enzyme-title" open><summary id="kin-note-enzyme-title">Enzyme kinetics: binding, turnover, and recycling</summary><p>Free enzyme E binds substrate S to form ES. The complex can release S again or form product P and regenerate E. The solver follows all three elementary steps directly. It does not impose the steady-state approximation used to derive the familiar Michaelis–Menten rate equation.</p><p>Try lowering the initial enzyme concentration from 1 to 0.01 mol/L while keeping S at 1 mol/L, and extend the time interval to see product build up. Watch ES form and E return as substrate is depleted. The totals [E] + [ES] and [S] + [ES] + [P] remain constant. The preset concentrations are illustrative teaching values.</p></details>
+  <details id="kin-note-dimer" class="kin-example-note" data-example="dimer" hidden aria-labelledby="kin-note-dimer-title" open><summary id="kin-note-dimer-title">Dimerization: two reactants make one product</summary><p>Two A molecules combine to make one B. The elementary reaction rate is <var>v</var> = <var>k</var>[A]<sup>2</sup>, and A disappears at twice that rate: −d[A]/d<var>t</var> = 2<var>k</var>[A]<sup>2</sup>. This factor of two is included automatically from the mechanism.</p><p>With the preset <var>k</var> = 1 L mol<sup>−1</sup> s<sup>−1</sup> and [A]<sub>0</sub> = 1 mol/L, half of A remains at 0.5 s. Try doubling [A]<sub>0</sub>: the initial rate increases fourfold and the half-life halves. The conserved quantity is [A] + 2[B], because each B contains two A units.</p></details>
+  <details id="kin-note-stiff" class="kin-example-note" data-example="stiff" hidden aria-labelledby="kin-note-stiff-title" open><summary id="kin-note-stiff-title">Fast and slow reactions: two very different time scales</summary><p>A becomes B rapidly, then B converts to C more slowly. The preset constants are 10,000 and 1 s<sup>−1</sup>: the first step acts on a roughly 0.0001 s time scale, while the second takes about 1 s. Such widely separated time scales make this a stiff kinetic problem.</p><p>Try setting the end time to 0.002 s to resolve the initial rise of B, then return to 10 s to follow its slower decay. The solver adapts its internal steps to the dynamics. Output points control the sampled curve; a coarse plot can miss a rapid feature even when the integration resolves it.</p></details>
+  <details id="kin-chirality-note" class="kin-example-note" data-example="chirality" hidden aria-labelledby="kin-chirality-title" open><summary id="kin-chirality-title">Chiral amplification · Nobel Prize in Chemistry 2026</summary><p>This simplified Frank-type teaching model illustrates asymmetric autocatalysis and mutual inhibition, ideas connected to the 2026 Chemistry Nobel awarded to Henri B. Kagan and Kenso Soai. A feeds the growth of either enantiomer, R or S; each catalyzes its own formation, while R + S forms inactive D. <a href="https://www.kva.se/en/prizes/nobel-prizes/they-solved-chemistrys-asymmetric-mystery/" target="_blank" rel="noopener noreferrer">Official prize background</a> · <a href="https://doi.org/10.1016/0006-3002(53)90082-1" target="_blank" rel="noopener noreferrer">Frank’s 1953 paper</a>.</p><p>The preset starts with a tiny R excess. The deterministic equations preserve an exactly racemic state; no random fluctuations are added. Try setting both initial concentrations to 0.1, or swap R = 0.10001 and S = 0.1 to reverse the favored hand. These are illustrative classroom parameters, not measured conditions for the Soai reaction.</p></details>
+<details id="kin-note-lotka" class="kin-example-note" data-example="lotka" hidden aria-labelledby="kin-note-lotka-title" open><summary id="kin-note-lotka-title">Lotka–Volterra: predator–prey cycles</summary><p>Prey reproduce, encounters convert prey into predators, and predators die when food is scarce. This reaction-like notation generates the classical predator–prey equations. The preset uses scaled populations and time, with all three rate parameters equal to one.</p><p>Open the phase-plane view to follow Predator versus Prey. Try changing the initial prey population from 1.5 to 2: the orbit changes. These ideal closed orbits are neutrally stable, not an attracting limit cycle. The equilibrium is Prey = Predator = 1; starting exactly there produces a steady state.</p><p><a href="https://www.mathworks.com/help/matlab/math/numerical-integration-of-differential-equations.html" target="_blank" rel="noopener noreferrer">Model equations and phase-plane example</a>.</p></details>
+<details id="kin-note-brusselator" class="kin-example-note" data-example="brusselator" hidden aria-labelledby="kin-note-brusselator-title" open><summary id="kin-note-brusselator-title">The Brusselator: a stable limit-cycle attractor</summary><p>A constant source feeds X; conversion to Y competes with the autocatalytic step 2 X + Y → 3 X. Fixed external reservoirs are absorbed into the effective rates. This idealized, scaled mass-action model can settle onto a repeating orbit after its initial transient.</p><p>The preset has feed parameter A = 1 and conversion parameter B = 3. With this rate convention, the steady state loses stability when B > 1 + A². Try lowering the rate of X → Y from 3 to 1.5: oscillations decay toward a steady state. Restore 3 and vary the initial concentrations to see trajectories approach the same limit cycle.</p><p><a href="https://docs.sciml.ai/Catalyst/v14.1/model_creation/examples/basic_CRN_library/" target="_blank" rel="noopener noreferrer">Reaction network and oscillation threshold</a>.</p></details>
+<details id="kin-note-oregonator" class="kin-example-note" data-example="oregonator" hidden aria-labelledby="kin-note-oregonator-title" open><summary id="kin-note-oregonator-title">The Oregonator: a model of the BZ reaction</summary><p>The Belousov–Zhabotinsky reaction couples autocatalysis to delayed inhibition. This three-variable, f = 1 Oregonator skeleton tracks an activator X, an inhibitor Y, and an oxidized-catalyst variable Z. Constant feed reservoirs are folded into the effective rate constants; untracked products are represented by 0.</p><p>Watch repeated pulses after the initial transient, then choose X and Z in the phase-plane view and hide the first half of the run. Try changing the rate of Z → Y to alter the feedback timing, or changing the initial conditions. These are illustrative scaled parameters for a well-mixed kinetic model, not a laboratory recipe or a simulation of spatial spiral waves. A periodic limit cycle is not a chaotic attractor.</p><p><a href="https://doi.org/10.1063/1.1681288" target="_blank" rel="noopener noreferrer">Field and Noyes: the original Oregonator model</a>.</p></details>
+  <section id="kin-scenarios" class="kin-scenarios" aria-labelledby="kin-scenarios-title"><h3 id="kin-scenarios-title">Explore this model</h3><div id="kin-scenario-buttons" class="kin-scenario-buttons" role="group" aria-label="Example scenarios"></div><p id="kin-scenario-description" role="status"></p></section>
+  <div class="kin-viewbar"><button type="button" id="kin-compare" aria-pressed="false">Compare plots</button><span>Fold any panel using its heading. Compare plots places both charts together on wider screens.</span></div>
+  <div class="kin-workspace"><details id="kin-input-panel" class="kin-inputs kin-panel" open><summary>Mechanism &amp; parameters</summary><div class="kin-input-body"><div id="kin-custom-guide" class="kin-custom-guide" hidden><h3>Custom mechanism</h3><p>Edit the current reactions, or start with a blank editor.</p><button type="button" id="kin-blank">Start blank</button><ol><li>Write one elementary reaction per line.</li><li>Select <strong>Set up mechanism</strong> to create the parameter fields.</li><li>Set the rates, initial concentrations, and time window, then calculate.</li></ol></div><details id="kin-mechanism-panel" class="kin-subpanel" open><summary>Reaction mechanism</summary>
+    <label for="kin-mechanism">One reaction per line</label><textarea id="kin-mechanism" rows="5" spellcheck="false" aria-describedby="kin-syntax" placeholder="A + B -> C&#10;C -> D">A -> B
+B -> C</textarea>
+    <p id="kin-syntax" class="kin-help">Add, remove, or replace reactions here. Use <code>A + B -> C</code>, <code>2 A -> B</code>, or <code>A &lt;-> B</code>. Use names such as <code>E</code>, <code>ES</code>, and <code>H_plus</code>.</p>
+    <button type="button" id="kin-setup">Set up mechanism</button>
+    </details><div id="kin-model-fields"><details class="kin-subpanel" open><summary>Rate constants</summary><p class="kin-help">Each arrow is an elementary, mass-action step.</p><div id="kin-rates"></div></details><details class="kin-subpanel" open><summary><span id="kin-initial-heading">Initial concentrations</span> <span class="kin-unit" id="kin-conc-unit">(mol/L)</span></summary><div id="kin-initial" class="kin-initial-grid"></div></details></div>
+    <div class="kin-time-grid"><label for="kin-start"><span id="kin-start-label">Start time (s)</span><input id="kin-start" type="number" min="0" step="any" value="0"></label><label for="kin-end"><span id="kin-end-label">End time (s)</span><input id="kin-end" type="number" min="0" step="any" value="10"></label></div>
+    <details class="kin-details"><summary>Numerical settings</summary><label for="kin-units">Units<select id="kin-units" aria-label="Model units"><option value="physical">Concentrations (mol/L) and seconds</option><option value="scaled">Scaled variables and time</option></select></label><p class="kin-help">This changes labels only; it does not convert the numbers. The oscillator presets use scaled model units.</p><div class="kin-time-grid"><label for="kin-points">Output points<input id="kin-points" type="number" min="2" max="2001" step="1" value="401"></label><label for="kin-accuracy">Accuracy<select id="kin-accuracy"><option value="1e-8">High</option><option value="1e-6">Standard</option></select></label></div><p class="kin-help">Adaptive ROS-2 integration with an analytical Jacobian and step-doubling error control. High: relative tolerance 10⁻⁸; standard: 10⁻⁶. Absolute tolerance: 10⁻¹² <span class="kin-value-unit">mol/L</span>. Output spacing does not set the internal step size.</p></details>
+    <div class="kin-actions"><button type="button" id="kin-run" class="kin-primary">Calculate concentrations</button><button type="button" id="kin-stop" hidden>Stop</button></div>
+  </div></details><section class="kin-results" aria-label="Calculated results">
+    <p id="kin-status" role="status" aria-live="polite">Choose a mechanism to begin.</p><p id="kin-error" role="alert" hidden></p>
+    <div id="kin-output" hidden><div id="kin-plot-grid" class="kin-plot-grid">
+      <details id="kin-time-panel" class="kin-plot-panel" open><summary><span id="kin-results-title">Concentration over time</span></summary>
+        <div class="kin-time-options"><div id="kin-legend" class="kin-legend" aria-label="Species shown in plot"></div><label for="kin-log"><input id="kin-log" type="checkbox"> Log concentration</label></div>
+        <div id="kin-chart" class="kin-chart"></div><p id="kin-log-note" class="kin-help" hidden>Zero concentrations are omitted on the logarithmic axis.</p>
+        <label class="kin-cursor-label" for="kin-time">Inspect time: <output id="kin-time-value" for="kin-time"></output></label><input id="kin-time" type="range" min="0" max="400" value="0" step="1">
+      </details>
+      <details id="kin-phase" class="kin-plot-panel kin-phase"><summary>Phase-plane trajectory</summary>
+        <details id="kin-phase-settings" class="kin-subpanel" open><summary>Phase plot settings</summary><div class="kin-phase-controls"><label for="kin-phase-x">Horizontal variable<select id="kin-phase-x" aria-label="Phase horizontal variable"></select></label><label for="kin-phase-y">Vertical variable<select id="kin-phase-y" aria-label="Phase vertical variable"></select></label></div><label class="kin-phase-trim"><input type="checkbox" id="kin-phase-trim"> Hide the first half of the run</label></details>
+        <div id="kin-phase-chart" class="kin-chart"></div>
+        <details id="kin-phase-guide" class="kin-subpanel"><summary>Plot guide &amp; download</summary><p class="kin-help">Green circle: start of the displayed trajectory. Magenta diamond: end. Black dot: time selected above. The path joins stored output points; use enough points to resolve fast turns. A closed-looking loop alone does not establish chaos.</p><button type="button" id="kin-phase-download">Download phase plot</button></details>
+      </details>
+    </div>
+    <details id="kin-values" class="kin-details" open><summary>Values at selected time</summary><p class="kin-help">Move the time slider or point at the time plot to inspect values. The black dot marks the same time on the phase plot.</p><div class="kin-table-scroll"><table class="kin-table"><caption>Concentrations in mol/L</caption><thead><tr><th scope="col">Species</th><th scope="col">Initial</th><th scope="col" id="kin-column-time">Selected time</th><th scope="col">Final</th></tr></thead><tbody id="kin-table-body"></tbody></table></div><div id="kin-ee" class="kin-ee" hidden><h3>Enantiomeric excess</h3><p><var>ee</var><sub>R</sub> = 100 × ([R] − [S]) / ([R] + [S]). Positive favors R; negative favors S. Only free R and S are counted.</p><dl><div><dt>Initial</dt><dd id="kin-ee-initial"></dd></div><div><dt id="kin-ee-time">Selected time</dt><dd id="kin-ee-current"></dd></div><div><dt>Final</dt><dd id="kin-ee-final"></dd></div></dl></div></details>
+    <div class="kin-actions"><button type="button" id="kin-csv">Download CSV</button><button type="button" id="kin-svg">Download time plot</button></div><details class="kin-details"><summary>Calculation details</summary><p id="kin-diagnostics" class="kin-help"></p></details></div>
+  </section></div>
+  <details class="kin-details kin-assumptions"><summary>How the model works</summary><p>For each elementary step, the rate is the rate constant multiplied by the reactant concentrations raised to their stoichiometric powers. For <code>2 A -> B</code>, the reaction rate is <var>v</var> = <var>k</var>[A]<sup>2</sup>, so d[A]/d<var>t</var> = −2<var>v</var> and d[B]/d<var>t</var> = <var>v</var>. This convention matters when entering a measured rate constant.</p><p>The model assumes a well-mixed system at constant volume and fixed rate constants. It does not infer rate laws for overall reactions, check elemental balance, or include diffusion, temperature changes, or stochastic effects. For physical concentration models, use consistent seconds and mol/L units; a reaction of total order <var>n</var> needs <var>k</var> in (mol/L)<sup>1−n</sup> s<sup>−1</sup>.</p><p>Write a reversible step with <code>&lt;-></code> to get separate forward and reverse constants. Repeated reactants are combined: <code>A + A</code> means <code>2 A</code>. Use <code>0 -> A</code> for a constant source and <code>A -> 0</code> for a first-order sink. Lines can contain <code># comments</code>. Charged species should use labels such as <code>H_plus</code>; the plus sign separates reactants. Limits: 32 species, 80 one-way steps, and 2,001 output points.</p><p>Numerical results are approximate. A calculation that cannot meet the tolerance or reaches a time limit stops with a message instead of displaying an incomplete result. The concentration sum is not generally conserved: for dimerization, for example, [A] + 2[B] is the conserved quantity.</p><p>This browser version restores the workflow and teaching examples of the group’s original R/Shiny direct-kinetics solver. <a href="https://kpp.readthedocs.io/en/stable/num_methods/rosenbrock-methods.html" target="_blank" rel="noopener noreferrer">ROS-2 method reference</a>.</p></details>
+  <noscript>This solver needs JavaScript enabled. It runs locally and does not require an account.</noscript>
+</div>
+</main><script>/* Mass-action kinetics. Original implementation for the Talipov group website.
+ * ROS-2 coefficients: KPP numerical-method documentation, Verwer et al. (1999).
+ * Uses an analytic Jacobian, pivoted LU and adaptive step doubling (order 2).
+ * No code evaluation, network requests, or external dependencies.
+ */
+(function (scope) {
+  'use strict';
+  const LIMITS = {species:32, reactions:80, text:16000, steps:100000};
+  function fail(message) { throw new Error(message); }
+  function number(value, name, min=0) {
+    if (value === '' || value === null || typeof value === 'boolean') fail(name+' must be a number.');
+    const n=Number(value); if (!Number.isFinite(n) || n<min) fail(name+' must be finite and at least '+min+'.'); return n;
+  }
+  function parse(text) {
+    if (typeof text!=='string' || text.length>LIMITS.text) fail('Enter a mechanism of at most 16,000 characters.');
+    const species=[], index=new Map(), reactions=[];
+    function side(source,line) {
+      source=source.trim(); if (source==='0' || source==='∅') return new Map();
+      if (!source) fail('Line '+line+': use 0 for an empty reactant or product side.');
+      const result=new Map();
+      for (const token of source.split('+')) {
+        const m=token.trim().match(/^(?:(\d+)\s*\*?\s*)?([A-Za-z][A-Za-z0-9_]{0,29})$/);
+        if (!m) fail('Line '+line+': use names such as A, CH3OH, or H_plus, with integer coefficients (for example 2 A).');
+        const c=m[1]?Number(m[1]):1; if(c<1||c>20) fail('Line '+line+': coefficients must be integers from 1 to 20.');
+        result.set(m[2],(result.get(m[2])||0)+c);
+        if(result.get(m[2])>20) fail('Line '+line+': combined coefficient exceeds 20.');
+        if(!index.has(m[2])) {index.set(m[2],species.length);species.push(m[2]);}
+      }
+      return result;
+    }
+    const pretty=m=>m.size?[...m].map(([n,c])=>(c===1?'':c+' ')+n).join(' + '):'0';
+    text.split(/\r?\n/).forEach((raw,li)=>{
+      const s=raw.split('#')[0].trim(); if(!s) return;
+      const parts=s.split(/(<->|<=>|⇌|↔|->|=>|→)/); if(parts.length!==3) fail('Line '+(li+1)+': use one -> or <-> arrow per reaction.');
+      const left=side(parts[0],li+1),right=side(parts[2],li+1);
+      if(!left.size&&!right.size) fail('Line '+(li+1)+': a reaction must contain a species.');
+      function add(a,b) {reactions.push({reactants:[...a].map(([n,c])=>[index.get(n),c]),products:[...b].map(([n,c])=>[index.get(n),c]),label:pretty(a)+' → '+pretty(b),order:[...a.values()].reduce((x,y)=>x+y,0)});}
+      add(left,right); if(['<->','<=>','⇌','↔'].includes(parts[1])) add(right,left);
+    });
+    if(!reactions.length) fail('Enter at least one reaction.');
+    if(species.length>LIMITS.species || reactions.length>LIMITS.reactions) fail('Use at most 32 species and 80 one-way reactions.');
+    for(const r of reactions) {
+      r.change=new Array(species.length).fill(0); for(const [i,c] of r.products) r.change[i]+=c; for(const [i,c] of r.reactants) r.change[i]-=c;
+      if(r.change.every(v=>v===0)) fail('Reaction '+r.label+' does not change any species.');
+    }
+    return {species,reactions};
+  }
+  function compile(config) {
+    if(!config||typeof config!=='object') fail('Invalid model.');
+    const model=parse(config.mechanism),n=model.species.length;
+    if(!Array.isArray(config.rates)||config.rates.length!==model.reactions.length) fail('Supply one rate constant for each one-way reaction.');
+    model.rates=config.rates.map((x,i)=>number(x,'Rate constant k'+(i+1)));
+    model.initial=model.species.map(s=>number(config.initial && Object.prototype.hasOwnProperty.call(config.initial,s)?config.initial[s]:0,'Initial concentration of '+s));
+    model.start=number(config.start??0,'Start time');model.end=number(config.end,'End time');
+    if(model.end<=model.start) fail('End time must be greater than start time.');
+    model.points=number(config.points??401,'Number of output points',2);
+    if(!Number.isInteger(model.points)||model.points>2001) fail('Choose 2–2001 output points.');
+    model.rtol=number(config.rtol??1e-8,'Relative tolerance',1e-10);model.atol=number(config.atol??1e-12,'Absolute tolerance',1e-16);
+    if(model.rtol>1e-2||model.atol>1) fail('The numerical tolerance is too loose.');
+    return model;
+  }
+  function evaluate(model,y,withJacobian) {
+    const n=y.length,f=new Array(n).fill(0),J=withJacobian?Array.from({length:n},()=>new Array(n).fill(0)):null;
+    model.reactions.forEach((r,ri)=>{
+      let v=model.rates[ri];for(const [j,c] of r.reactants) v*=Math.pow(y[j],c);
+      for(let i=0;i<n;i++) f[i]+=r.change[i]*v;
+      if(J) for(const [j,c] of r.reactants) {
+        let dv=model.rates[ri]*c;for(const [q,p] of r.reactants) dv*=Math.pow(y[q],p-(q===j?1:0));
+        for(let i=0;i<n;i++) J[i][j]+=r.change[i]*dv;
+      }
+    });
+    return {f,J};
+  }
+  function factor(A) {
+    const n=A.length,piv=[];
+    for(let j=0;j<n;j++) {
+      let p=j;for(let i=j+1;i<n;i++) if(Math.abs(A[i][j])>Math.abs(A[p][j])) p=i;
+      if(!Number.isFinite(A[p][j])||Math.abs(A[p][j])<1e-280) return null;
+      piv.push(p);if(p!==j) [A[p],A[j]]=[A[j],A[p]];
+      for(let i=j+1;i<n;i++) {A[i][j]/=A[j][j];for(let k=j+1;k<n;k++) A[i][k]-=A[i][j]*A[j][k];}
+    }
+    return {A,piv};
+  }
+  function solveLU(lu,rhs) {
+    const {A,piv}=lu,b=rhs.slice(),n=b.length;
+    for(let j=0;j<n;j++) if(piv[j]!==j) [b[j],b[piv[j]]]=[b[piv[j]],b[j]];
+    for(let i=1;i<n;i++) for(let j=0;j<i;j++) b[i]-=A[i][j]*b[j];
+    for(let i=n-1;i>=0;i--) {for(let j=i+1;j<n;j++) b[i]-=A[i][j]*b[j];b[i]/=A[i][i];}
+    return b;
+  }
+  const gamma=1+1/Math.sqrt(2);
+  function step(model,y,h) {
+    const {f,J}=evaluate(model,y,true),n=y.length;
+    const lu=factor(J.map((row,i)=>row.map((v,j)=>(i===j?1:0)-h*gamma*v)));if(!lu) return null;
+    const k1=solveLU(lu,f.map(v=>h*gamma*v));
+    const stage=y.map((v,i)=>v+k1[i]/gamma);
+    if(stage.some(v=>!Number.isFinite(v)||v < -model.atol)) return null;
+    const f2=evaluate(model,stage.map(v=>Math.max(0,v)),false).f;
+    const k2=solveLU(lu,f2.map((v,i)=>h*gamma*v-2*k1[i]));
+    const out=y.map((v,i)=>v+(1.5*k1[i]+.5*k2[i])/gamma);
+    return out.every(Number.isFinite)?out:null;
+  }
+  function integrate(config) {
+    const model=compile(config),n=model.species.length,start=Date.now(),times=[model.start],values=[model.initial.slice()];
+    let y=model.initial.slice(),t=model.start,h=(model.end-model.start)/100,accepted=0,rejected=0,clipped=0;
+    let initialJ=evaluate(model,y,true).J,scale=Math.max(...initialJ.map(r=>r.reduce((a,b)=>a+Math.abs(b),0)));
+    if(scale>0) h=Math.min(h,.1/scale);
+    for(let out=1;out<model.points;out++) {
+      const target=model.start+(model.end-model.start)*(out/(model.points-1));
+      while(t<target) {
+        if(accepted+rejected>LIMITS.steps||Date.now()-start>20000) fail('This model exceeded the calculation limit. Shorten the time interval, simplify the mechanism, or use a specialist solver. No incomplete curve is shown.');
+        h=Math.min(h,target-t);
+        if(t+h===t||h<=0) fail('The requested accuracy cannot be reached at these concentration or time scales. Check the inputs or adjust the numerical tolerance.');
+        const coarse=step(model,y,h),half=step(model,y,h/2),fine=half?step(model,half,h/2):null;
+        let err=Infinity;
+        if(coarse&&fine&&half&&!coarse.some(v=>v < -model.atol*.01)&&!half.some(v=>v < -model.atol*.01)&&!fine.some(v=>v < -model.atol*.01)) {
+          err=0;for(let i=0;i<n;i++) err=Math.max(err,Math.abs(fine[i]-coarse[i])/3/(model.atol+model.rtol*Math.max(Math.abs(y[i]),Math.abs(fine[i]))));
+        }
+        if(err<=1) {
+          y=fine.map(v=>{if(v<0){clipped+=-v;return 0;}return v;});t=(target-t<=h)?target:t+h;accepted++;
+          h*=Math.min(5,Math.max(.25,err===0?5:.9*Math.pow(err,-1/3)));
+        } else {rejected++;h*=Number.isFinite(err)?Math.max(.1,Math.min(.5,.8*Math.pow(err,-1/3))):.25;}
+      }
+      times.push(target);values.push(y.slice());
+    }
+    return {species:model.species,times,values,stats:{accepted,rejected,clipped,elapsedMs:Date.now()-start,rtol:model.rtol,atol:model.atol},reactions:model.reactions.map(r=>r.label)};
+  }
+  const api={parse,compile,integrate,evaluate,LIMITS};
+  if(typeof module!=='undefined'&&module.exports) module.exports=api;else scope.Kinetics=api;
+})(typeof self!=='undefined'?self:globalThis);
+</script><script>window.KINETICS_WORKER_SOURCE="/* Mass-action kinetics. Original implementation for the Talipov group website.\n * ROS-2 coefficients: KPP numerical-method documentation, Verwer et al. (1999).\n * Uses an analytic Jacobian, pivoted LU and adaptive step doubling (order 2).\n * No code evaluation, network requests, or external dependencies.\n */\n(function (scope) {\n  'use strict';\n  const LIMITS = {species:32, reactions:80, text:16000, steps:100000};\n  function fail(message) { throw new Error(message); }\n  function number(value, name, min=0) {\n    if (value === '' || value === null || typeof value === 'boolean') fail(name+' must be a number.');\n    const n=Number(value); if (!Number.isFinite(n) || n<min) fail(name+' must be finite and at least '+min+'.'); return n;\n  }\n  function parse(text) {\n    if (typeof text!=='string' || text.length>LIMITS.text) fail('Enter a mechanism of at most 16,000 characters.');\n    const species=[], index=new Map(), reactions=[];\n    function side(source,line) {\n      source=source.trim(); if (source==='0' || source==='\u2205') return new Map();\n      if (!source) fail('Line '+line+': use 0 for an empty reactant or product side.');\n      const result=new Map();\n      for (const token of source.split('+')) {\n        const m=token.trim().match(/^(?:(\\d+)\\s*\\*?\\s*)?([A-Za-z][A-Za-z0-9_]{0,29})$/);\n        if (!m) fail('Line '+line+': use names such as A, CH3OH, or H_plus, with integer coefficients (for example 2 A).');\n        const c=m[1]?Number(m[1]):1; if(c<1||c>20) fail('Line '+line+': coefficients must be integers from 1 to 20.');\n        result.set(m[2],(result.get(m[2])||0)+c);\n        if(result.get(m[2])>20) fail('Line '+line+': combined coefficient exceeds 20.');\n        if(!index.has(m[2])) {index.set(m[2],species.length);species.push(m[2]);}\n      }\n      return result;\n    }\n    const pretty=m=>m.size?[...m].map(([n,c])=>(c===1?'':c+' ')+n).join(' + '):'0';\n    text.split(/\\r?\\n/).forEach((raw,li)=>{\n      const s=raw.split('#')[0].trim(); if(!s) return;\n      const parts=s.split(/(<->|<=>|\u21cc|\u2194|->|=>|\u2192)/); if(parts.length!==3) fail('Line '+(li+1)+': use one -> or <-> arrow per reaction.');\n      const left=side(parts[0],li+1),right=side(parts[2],li+1);\n      if(!left.size&&!right.size) fail('Line '+(li+1)+': a reaction must contain a species.');\n      function add(a,b) {reactions.push({reactants:[...a].map(([n,c])=>[index.get(n),c]),products:[...b].map(([n,c])=>[index.get(n),c]),label:pretty(a)+' \u2192 '+pretty(b),order:[...a.values()].reduce((x,y)=>x+y,0)});}\n      add(left,right); if(['<->','<=>','\u21cc','\u2194'].includes(parts[1])) add(right,left);\n    });\n    if(!reactions.length) fail('Enter at least one reaction.');\n    if(species.length>LIMITS.species || reactions.length>LIMITS.reactions) fail('Use at most 32 species and 80 one-way reactions.');\n    for(const r of reactions) {\n      r.change=new Array(species.length).fill(0); for(const [i,c] of r.products) r.change[i]+=c; for(const [i,c] of r.reactants) r.change[i]-=c;\n      if(r.change.every(v=>v===0)) fail('Reaction '+r.label+' does not change any species.');\n    }\n    return {species,reactions};\n  }\n  function compile(config) {\n    if(!config||typeof config!=='object') fail('Invalid model.');\n    const model=parse(config.mechanism),n=model.species.length;\n    if(!Array.isArray(config.rates)||config.rates.length!==model.reactions.length) fail('Supply one rate constant for each one-way reaction.');\n    model.rates=config.rates.map((x,i)=>number(x,'Rate constant k'+(i+1)));\n    model.initial=model.species.map(s=>number(config.initial && Object.prototype.hasOwnProperty.call(config.initial,s)?config.initial[s]:0,'Initial concentration of '+s));\n    model.start=number(config.start??0,'Start time');model.end=number(config.end,'End time');\n    if(model.end<=model.start) fail('End time must be greater than start time.');\n    model.points=number(config.points??401,'Number of output points',2);\n    if(!Number.isInteger(model.points)||model.points>2001) fail('Choose 2\u20132001 output points.');\n    model.rtol=number(config.rtol??1e-8,'Relative tolerance',1e-10);model.atol=number(config.atol??1e-12,'Absolute tolerance',1e-16);\n    if(model.rtol>1e-2||model.atol>1) fail('The numerical tolerance is too loose.');\n    return model;\n  }\n  function evaluate(model,y,withJacobian) {\n    const n=y.length,f=new Array(n).fill(0),J=withJacobian?Array.from({length:n},()=>new Array(n).fill(0)):null;\n    model.reactions.forEach((r,ri)=>{\n      let v=model.rates[ri];for(const [j,c] of r.reactants) v*=Math.pow(y[j],c);\n      for(let i=0;i<n;i++) f[i]+=r.change[i]*v;\n      if(J) for(const [j,c] of r.reactants) {\n        let dv=model.rates[ri]*c;for(const [q,p] of r.reactants) dv*=Math.pow(y[q],p-(q===j?1:0));\n        for(let i=0;i<n;i++) J[i][j]+=r.change[i]*dv;\n      }\n    });\n    return {f,J};\n  }\n  function factor(A) {\n    const n=A.length,piv=[];\n    for(let j=0;j<n;j++) {\n      let p=j;for(let i=j+1;i<n;i++) if(Math.abs(A[i][j])>Math.abs(A[p][j])) p=i;\n      if(!Number.isFinite(A[p][j])||Math.abs(A[p][j])<1e-280) return null;\n      piv.push(p);if(p!==j) [A[p],A[j]]=[A[j],A[p]];\n      for(let i=j+1;i<n;i++) {A[i][j]/=A[j][j];for(let k=j+1;k<n;k++) A[i][k]-=A[i][j]*A[j][k];}\n    }\n    return {A,piv};\n  }\n  function solveLU(lu,rhs) {\n    const {A,piv}=lu,b=rhs.slice(),n=b.length;\n    for(let j=0;j<n;j++) if(piv[j]!==j) [b[j],b[piv[j]]]=[b[piv[j]],b[j]];\n    for(let i=1;i<n;i++) for(let j=0;j<i;j++) b[i]-=A[i][j]*b[j];\n    for(let i=n-1;i>=0;i--) {for(let j=i+1;j<n;j++) b[i]-=A[i][j]*b[j];b[i]/=A[i][i];}\n    return b;\n  }\n  const gamma=1+1/Math.sqrt(2);\n  function step(model,y,h) {\n    const {f,J}=evaluate(model,y,true),n=y.length;\n    const lu=factor(J.map((row,i)=>row.map((v,j)=>(i===j?1:0)-h*gamma*v)));if(!lu) return null;\n    const k1=solveLU(lu,f.map(v=>h*gamma*v));\n    const stage=y.map((v,i)=>v+k1[i]/gamma);\n    if(stage.some(v=>!Number.isFinite(v)||v < -model.atol)) return null;\n    const f2=evaluate(model,stage.map(v=>Math.max(0,v)),false).f;\n    const k2=solveLU(lu,f2.map((v,i)=>h*gamma*v-2*k1[i]));\n    const out=y.map((v,i)=>v+(1.5*k1[i]+.5*k2[i])/gamma);\n    return out.every(Number.isFinite)?out:null;\n  }\n  function integrate(config) {\n    const model=compile(config),n=model.species.length,start=Date.now(),times=[model.start],values=[model.initial.slice()];\n    let y=model.initial.slice(),t=model.start,h=(model.end-model.start)/100,accepted=0,rejected=0,clipped=0;\n    let initialJ=evaluate(model,y,true).J,scale=Math.max(...initialJ.map(r=>r.reduce((a,b)=>a+Math.abs(b),0)));\n    if(scale>0) h=Math.min(h,.1/scale);\n    for(let out=1;out<model.points;out++) {\n      const target=model.start+(model.end-model.start)*(out/(model.points-1));\n      while(t<target) {\n        if(accepted+rejected>LIMITS.steps||Date.now()-start>20000) fail('This model exceeded the calculation limit. Shorten the time interval, simplify the mechanism, or use a specialist solver. No incomplete curve is shown.');\n        h=Math.min(h,target-t);\n        if(t+h===t||h<=0) fail('The requested accuracy cannot be reached at these concentration or time scales. Check the inputs or adjust the numerical tolerance.');\n        const coarse=step(model,y,h),half=step(model,y,h/2),fine=half?step(model,half,h/2):null;\n        let err=Infinity;\n        if(coarse&&fine&&half&&!coarse.some(v=>v < -model.atol*.01)&&!half.some(v=>v < -model.atol*.01)&&!fine.some(v=>v < -model.atol*.01)) {\n          err=0;for(let i=0;i<n;i++) err=Math.max(err,Math.abs(fine[i]-coarse[i])/3/(model.atol+model.rtol*Math.max(Math.abs(y[i]),Math.abs(fine[i]))));\n        }\n        if(err<=1) {\n          y=fine.map(v=>{if(v<0){clipped+=-v;return 0;}return v;});t=(target-t<=h)?target:t+h;accepted++;\n          h*=Math.min(5,Math.max(.25,err===0?5:.9*Math.pow(err,-1/3)));\n        } else {rejected++;h*=Number.isFinite(err)?Math.max(.1,Math.min(.5,.8*Math.pow(err,-1/3))):.25;}\n      }\n      times.push(target);values.push(y.slice());\n    }\n    return {species:model.species,times,values,stats:{accepted,rejected,clipped,elapsedMs:Date.now()-start,rtol:model.rtol,atol:model.atol},reactions:model.reactions.map(r=>r.label)};\n  }\n  const api={parse,compile,integrate,evaluate,LIMITS};\n  if(typeof module!=='undefined'&&module.exports) module.exports=api;else scope.Kinetics=api;\n})(typeof self!=='undefined'?self:globalThis);\n\n'use strict';\n\nself.onmessage=event=>{try{self.postMessage({result:Kinetics.integrate(event.data)});}catch(error){self.postMessage({error:error.message});}};\n";</script><script>(function () {
+  'use strict';
+  const scriptURL=document.currentScript?.src || location.href;
+  const markup="<div id=\"kinetics-app\" class=\"kinetics-app\">\n  <div class=\"kin-intro-note\">Calculations run in your browser. Your mechanism and results are not sent to a server.</div>\n  <div class=\"kin-start-options\" aria-label=\"Choose how to begin\">\n    <section class=\"kin-start-card kin-custom-card\" aria-labelledby=\"kin-custom-title\"><h2 id=\"kin-custom-title\">Your reactions. Your model.</h2><p>Write your own network of elementary reactions, with your own species, rate constants, and initial concentrations.</p><button type=\"button\" id=\"kin-custom\" class=\"kin-primary\" aria-controls=\"kin-input-panel\">Build your own mechanism</button></section>\n    <section class=\"kin-start-card\" aria-labelledby=\"kin-examples-title\"><h2 id=\"kin-examples-title\">Explore a worked example</h2><p>Try a teaching model and its scenarios. Every example can also be edited into your own mechanism.</p><div class=\"kin-example-picker\"><label for=\"kin-example\">Start from an example<select id=\"kin-example\" aria-label=\"Start from an example\"><option value=\"chirality\">Chiral amplification — Nobel 2026</option><option value=\"consecutive\" selected>Consecutive reactions</option><option value=\"equilibrium\">Equilibrium</option><option value=\"parallel\">Parallel reactions</option><option value=\"enzyme\">Michaelis–Menten mechanism</option><option value=\"dimer\">Dimerization</option><option value=\"stiff\">Fast and slow reactions</option><option value=\"lotka\">Lotka–Volterra: predator and prey</option><option value=\"brusselator\">Brusselator: a limit-cycle attractor</option><option value=\"oregonator\">BZ reaction: the Oregonator</option></select></label><button type=\"button\" id=\"kin-load-example\">Load example</button></div></section>\n  </div>\n  <div class=\"kin-toolbar\"><button type=\"button\" id=\"kin-save\">Save model</button><label class=\"kin-file-button\" for=\"kin-import\">Open model<input type=\"file\" id=\"kin-import\" accept=\".json,application/json\"></label></div>\n  <details id=\"kin-note-consecutive\" class=\"kin-example-note\" data-example=\"consecutive\" hidden aria-labelledby=\"kin-note-consecutive-title\" open><summary id=\"kin-note-consecutive-title\">Consecutive reactions: the rise and fall of an intermediate</summary><p>A first forms B, which then forms C. B is an intermediate: it builds up while its formation is faster than its consumption, then falls as A runs out. With both preset rate constants equal to 1 s<sup>−1</sup>, B reaches its maximum at 1 s and C eventually accumulates.</p><p>Try increasing the second rate constant to make B shorter-lived, or decreasing it to let B accumulate. Compare the height and timing of the B peak. The total [A] + [B] + [C] stays constant in this model.</p></details>\n  <details id=\"kin-note-equilibrium\" class=\"kin-example-note\" data-example=\"equilibrium\" hidden aria-labelledby=\"kin-note-equilibrium-title\" open><summary id=\"kin-note-equilibrium-title\">Reversible reactions: a dynamic equilibrium</summary><p>A and B continually interconvert. At equilibrium the forward and reverse rates balance, so the concentrations stop changing even though both reactions continue. The preset starts with A = 1 mol/L and B = 0; equal rate constants lead to 0.5 mol/L of each.</p><p>Try doubling the forward rate constant: the final ratio [B]/[A] approaches <var>k</var><sub>forward</sub>/<var>k</var><sub>reverse</sub> = 2. Alternatively, multiply both constants by ten: the same equilibrium is reached more quickly.</p></details>\n  <details id=\"kin-note-parallel\" class=\"kin-example-note\" data-example=\"parallel\" hidden aria-labelledby=\"kin-note-parallel-title\" open><summary id=\"kin-note-parallel-title\">Parallel reactions: competing pathways</summary><p>A can become either B or C. Both pathways consume the same starting material, and their relative rate constants determine how it is divided between the products. With the two preset constants equal, B and C approach equal final concentrations.</p><p>Try changing the rate constant for A → C from 1 to 3 s<sup>−1</sup>. Of the A that reacts, one quarter becomes B and three quarters become C. A disappears with a combined first-order rate constant equal to the sum of the two pathway constants.</p></details>\n  <details id=\"kin-note-enzyme\" class=\"kin-example-note\" data-example=\"enzyme\" hidden aria-labelledby=\"kin-note-enzyme-title\" open><summary id=\"kin-note-enzyme-title\">Enzyme kinetics: binding, turnover, and recycling</summary><p>Free enzyme E binds substrate S to form ES. The complex can release S again or form product P and regenerate E. The solver follows all three elementary steps directly. It does not impose the steady-state approximation used to derive the familiar Michaelis–Menten rate equation.</p><p>Try lowering the initial enzyme concentration from 1 to 0.01 mol/L while keeping S at 1 mol/L, and extend the time interval to see product build up. Watch ES form and E return as substrate is depleted. The totals [E] + [ES] and [S] + [ES] + [P] remain constant. The preset concentrations are illustrative teaching values.</p></details>\n  <details id=\"kin-note-dimer\" class=\"kin-example-note\" data-example=\"dimer\" hidden aria-labelledby=\"kin-note-dimer-title\" open><summary id=\"kin-note-dimer-title\">Dimerization: two reactants make one product</summary><p>Two A molecules combine to make one B. The elementary reaction rate is <var>v</var> = <var>k</var>[A]<sup>2</sup>, and A disappears at twice that rate: −d[A]/d<var>t</var> = 2<var>k</var>[A]<sup>2</sup>. This factor of two is included automatically from the mechanism.</p><p>With the preset <var>k</var> = 1 L mol<sup>−1</sup> s<sup>−1</sup> and [A]<sub>0</sub> = 1 mol/L, half of A remains at 0.5 s. Try doubling [A]<sub>0</sub>: the initial rate increases fourfold and the half-life halves. The conserved quantity is [A] + 2[B], because each B contains two A units.</p></details>\n  <details id=\"kin-note-stiff\" class=\"kin-example-note\" data-example=\"stiff\" hidden aria-labelledby=\"kin-note-stiff-title\" open><summary id=\"kin-note-stiff-title\">Fast and slow reactions: two very different time scales</summary><p>A becomes B rapidly, then B converts to C more slowly. The preset constants are 10,000 and 1 s<sup>−1</sup>: the first step acts on a roughly 0.0001 s time scale, while the second takes about 1 s. Such widely separated time scales make this a stiff kinetic problem.</p><p>Try setting the end time to 0.002 s to resolve the initial rise of B, then return to 10 s to follow its slower decay. The solver adapts its internal steps to the dynamics. Output points control the sampled curve; a coarse plot can miss a rapid feature even when the integration resolves it.</p></details>\n  <details id=\"kin-chirality-note\" class=\"kin-example-note\" data-example=\"chirality\" hidden aria-labelledby=\"kin-chirality-title\" open><summary id=\"kin-chirality-title\">Chiral amplification · Nobel Prize in Chemistry 2026</summary><p>This simplified Frank-type teaching model illustrates asymmetric autocatalysis and mutual inhibition, ideas connected to the 2026 Chemistry Nobel awarded to Henri B. Kagan and Kenso Soai. A feeds the growth of either enantiomer, R or S; each catalyzes its own formation, while R + S forms inactive D. <a href=\"https://www.kva.se/en/prizes/nobel-prizes/they-solved-chemistrys-asymmetric-mystery/\" target=\"_blank\" rel=\"noopener noreferrer\">Official prize background</a> · <a href=\"https://doi.org/10.1016/0006-3002(53)90082-1\" target=\"_blank\" rel=\"noopener noreferrer\">Frank’s 1953 paper</a>.</p><p>The preset starts with a tiny R excess. The deterministic equations preserve an exactly racemic state; no random fluctuations are added. Try setting both initial concentrations to 0.1, or swap R = 0.10001 and S = 0.1 to reverse the favored hand. These are illustrative classroom parameters, not measured conditions for the Soai reaction.</p></details>\n<details id=\"kin-note-lotka\" class=\"kin-example-note\" data-example=\"lotka\" hidden aria-labelledby=\"kin-note-lotka-title\" open><summary id=\"kin-note-lotka-title\">Lotka–Volterra: predator–prey cycles</summary><p>Prey reproduce, encounters convert prey into predators, and predators die when food is scarce. This reaction-like notation generates the classical predator–prey equations. The preset uses scaled populations and time, with all three rate parameters equal to one.</p><p>Open the phase-plane view to follow Predator versus Prey. Try changing the initial prey population from 1.5 to 2: the orbit changes. These ideal closed orbits are neutrally stable, not an attracting limit cycle. The equilibrium is Prey = Predator = 1; starting exactly there produces a steady state.</p><p><a href=\"https://www.mathworks.com/help/matlab/math/numerical-integration-of-differential-equations.html\" target=\"_blank\" rel=\"noopener noreferrer\">Model equations and phase-plane example</a>.</p></details>\n<details id=\"kin-note-brusselator\" class=\"kin-example-note\" data-example=\"brusselator\" hidden aria-labelledby=\"kin-note-brusselator-title\" open><summary id=\"kin-note-brusselator-title\">The Brusselator: a stable limit-cycle attractor</summary><p>A constant source feeds X; conversion to Y competes with the autocatalytic step 2 X + Y → 3 X. Fixed external reservoirs are absorbed into the effective rates. This idealized, scaled mass-action model can settle onto a repeating orbit after its initial transient.</p><p>The preset has feed parameter A = 1 and conversion parameter B = 3. With this rate convention, the steady state loses stability when B > 1 + A². Try lowering the rate of X → Y from 3 to 1.5: oscillations decay toward a steady state. Restore 3 and vary the initial concentrations to see trajectories approach the same limit cycle.</p><p><a href=\"https://docs.sciml.ai/Catalyst/v14.1/model_creation/examples/basic_CRN_library/\" target=\"_blank\" rel=\"noopener noreferrer\">Reaction network and oscillation threshold</a>.</p></details>\n<details id=\"kin-note-oregonator\" class=\"kin-example-note\" data-example=\"oregonator\" hidden aria-labelledby=\"kin-note-oregonator-title\" open><summary id=\"kin-note-oregonator-title\">The Oregonator: a model of the BZ reaction</summary><p>The Belousov–Zhabotinsky reaction couples autocatalysis to delayed inhibition. This three-variable, f = 1 Oregonator skeleton tracks an activator X, an inhibitor Y, and an oxidized-catalyst variable Z. Constant feed reservoirs are folded into the effective rate constants; untracked products are represented by 0.</p><p>Watch repeated pulses after the initial transient, then choose X and Z in the phase-plane view and hide the first half of the run. Try changing the rate of Z → Y to alter the feedback timing, or changing the initial conditions. These are illustrative scaled parameters for a well-mixed kinetic model, not a laboratory recipe or a simulation of spatial spiral waves. A periodic limit cycle is not a chaotic attractor.</p><p><a href=\"https://doi.org/10.1063/1.1681288\" target=\"_blank\" rel=\"noopener noreferrer\">Field and Noyes: the original Oregonator model</a>.</p></details>\n  <section id=\"kin-scenarios\" class=\"kin-scenarios\" aria-labelledby=\"kin-scenarios-title\"><h3 id=\"kin-scenarios-title\">Explore this model</h3><div id=\"kin-scenario-buttons\" class=\"kin-scenario-buttons\" role=\"group\" aria-label=\"Example scenarios\"></div><p id=\"kin-scenario-description\" role=\"status\"></p></section>\n  <div class=\"kin-viewbar\"><button type=\"button\" id=\"kin-compare\" aria-pressed=\"false\">Compare plots</button><span>Fold any panel using its heading. Compare plots places both charts together on wider screens.</span></div>\n  <div class=\"kin-workspace\"><details id=\"kin-input-panel\" class=\"kin-inputs kin-panel\" open><summary>Mechanism &amp; parameters</summary><div class=\"kin-input-body\"><div id=\"kin-custom-guide\" class=\"kin-custom-guide\" hidden><h3>Custom mechanism</h3><p>Edit the current reactions, or start with a blank editor.</p><button type=\"button\" id=\"kin-blank\">Start blank</button><ol><li>Write one elementary reaction per line.</li><li>Select <strong>Set up mechanism</strong> to create the parameter fields.</li><li>Set the rates, initial concentrations, and time window, then calculate.</li></ol></div><details id=\"kin-mechanism-panel\" class=\"kin-subpanel\" open><summary>Reaction mechanism</summary>\n    <label for=\"kin-mechanism\">One reaction per line</label><textarea id=\"kin-mechanism\" rows=\"5\" spellcheck=\"false\" aria-describedby=\"kin-syntax\" placeholder=\"A + B -> C&#10;C -> D\">A -> B\nB -> C</textarea>\n    <p id=\"kin-syntax\" class=\"kin-help\">Add, remove, or replace reactions here. Use <code>A + B -> C</code>, <code>2 A -> B</code>, or <code>A &lt;-> B</code>. Use names such as <code>E</code>, <code>ES</code>, and <code>H_plus</code>.</p>\n    <button type=\"button\" id=\"kin-setup\">Set up mechanism</button>\n    </details><div id=\"kin-model-fields\"><details class=\"kin-subpanel\" open><summary>Rate constants</summary><p class=\"kin-help\">Each arrow is an elementary, mass-action step.</p><div id=\"kin-rates\"></div></details><details class=\"kin-subpanel\" open><summary><span id=\"kin-initial-heading\">Initial concentrations</span> <span class=\"kin-unit\" id=\"kin-conc-unit\">(mol/L)</span></summary><div id=\"kin-initial\" class=\"kin-initial-grid\"></div></details></div>\n    <div class=\"kin-time-grid\"><label for=\"kin-start\"><span id=\"kin-start-label\">Start time (s)</span><input id=\"kin-start\" type=\"number\" min=\"0\" step=\"any\" value=\"0\"></label><label for=\"kin-end\"><span id=\"kin-end-label\">End time (s)</span><input id=\"kin-end\" type=\"number\" min=\"0\" step=\"any\" value=\"10\"></label></div>\n    <details class=\"kin-details\"><summary>Numerical settings</summary><label for=\"kin-units\">Units<select id=\"kin-units\" aria-label=\"Model units\"><option value=\"physical\">Concentrations (mol/L) and seconds</option><option value=\"scaled\">Scaled variables and time</option></select></label><p class=\"kin-help\">This changes labels only; it does not convert the numbers. The oscillator presets use scaled model units.</p><div class=\"kin-time-grid\"><label for=\"kin-points\">Output points<input id=\"kin-points\" type=\"number\" min=\"2\" max=\"2001\" step=\"1\" value=\"401\"></label><label for=\"kin-accuracy\">Accuracy<select id=\"kin-accuracy\"><option value=\"1e-8\">High</option><option value=\"1e-6\">Standard</option></select></label></div><p class=\"kin-help\">Adaptive ROS-2 integration with an analytical Jacobian and step-doubling error control. High: relative tolerance 10⁻⁸; standard: 10⁻⁶. Absolute tolerance: 10⁻¹² <span class=\"kin-value-unit\">mol/L</span>. Output spacing does not set the internal step size.</p></details>\n    <div class=\"kin-actions\"><button type=\"button\" id=\"kin-run\" class=\"kin-primary\">Calculate concentrations</button><button type=\"button\" id=\"kin-stop\" hidden>Stop</button></div>\n  </div></details><section class=\"kin-results\" aria-label=\"Calculated results\">\n    <p id=\"kin-status\" role=\"status\" aria-live=\"polite\">Choose a mechanism to begin.</p><p id=\"kin-error\" role=\"alert\" hidden></p>\n    <div id=\"kin-output\" hidden><div id=\"kin-plot-grid\" class=\"kin-plot-grid\">\n      <details id=\"kin-time-panel\" class=\"kin-plot-panel\" open><summary><span id=\"kin-results-title\">Concentration over time</span></summary>\n        <div class=\"kin-time-options\"><div id=\"kin-legend\" class=\"kin-legend\" aria-label=\"Species shown in plot\"></div><label for=\"kin-log\"><input id=\"kin-log\" type=\"checkbox\"> Log concentration</label></div>\n        <div id=\"kin-chart\" class=\"kin-chart\"></div><p id=\"kin-log-note\" class=\"kin-help\" hidden>Zero concentrations are omitted on the logarithmic axis.</p>\n        <label class=\"kin-cursor-label\" for=\"kin-time\">Inspect time: <output id=\"kin-time-value\" for=\"kin-time\"></output></label><input id=\"kin-time\" type=\"range\" min=\"0\" max=\"400\" value=\"0\" step=\"1\">\n      </details>\n      <details id=\"kin-phase\" class=\"kin-plot-panel kin-phase\"><summary>Phase-plane trajectory</summary>\n        <details id=\"kin-phase-settings\" class=\"kin-subpanel\" open><summary>Phase plot settings</summary><div class=\"kin-phase-controls\"><label for=\"kin-phase-x\">Horizontal variable<select id=\"kin-phase-x\" aria-label=\"Phase horizontal variable\"></select></label><label for=\"kin-phase-y\">Vertical variable<select id=\"kin-phase-y\" aria-label=\"Phase vertical variable\"></select></label></div><label class=\"kin-phase-trim\"><input type=\"checkbox\" id=\"kin-phase-trim\"> Hide the first half of the run</label></details>\n        <div id=\"kin-phase-chart\" class=\"kin-chart\"></div>\n        <details id=\"kin-phase-guide\" class=\"kin-subpanel\"><summary>Plot guide &amp; download</summary><p class=\"kin-help\">Green circle: start of the displayed trajectory. Magenta diamond: end. Black dot: time selected above. The path joins stored output points; use enough points to resolve fast turns. A closed-looking loop alone does not establish chaos.</p><button type=\"button\" id=\"kin-phase-download\">Download phase plot</button></details>\n      </details>\n    </div>\n    <details id=\"kin-values\" class=\"kin-details\" open><summary>Values at selected time</summary><p class=\"kin-help\">Move the time slider or point at the time plot to inspect values. The black dot marks the same time on the phase plot.</p><div class=\"kin-table-scroll\"><table class=\"kin-table\"><caption>Concentrations in mol/L</caption><thead><tr><th scope=\"col\">Species</th><th scope=\"col\">Initial</th><th scope=\"col\" id=\"kin-column-time\">Selected time</th><th scope=\"col\">Final</th></tr></thead><tbody id=\"kin-table-body\"></tbody></table></div><div id=\"kin-ee\" class=\"kin-ee\" hidden><h3>Enantiomeric excess</h3><p><var>ee</var><sub>R</sub> = 100 × ([R] − [S]) / ([R] + [S]). Positive favors R; negative favors S. Only free R and S are counted.</p><dl><div><dt>Initial</dt><dd id=\"kin-ee-initial\"></dd></div><div><dt id=\"kin-ee-time\">Selected time</dt><dd id=\"kin-ee-current\"></dd></div><div><dt>Final</dt><dd id=\"kin-ee-final\"></dd></div></dl></div></details>\n    <div class=\"kin-actions\"><button type=\"button\" id=\"kin-csv\">Download CSV</button><button type=\"button\" id=\"kin-svg\">Download time plot</button></div><details class=\"kin-details\"><summary>Calculation details</summary><p id=\"kin-diagnostics\" class=\"kin-help\"></p></details></div>\n  </section></div>\n  <details class=\"kin-details kin-assumptions\"><summary>How the model works</summary><p>For each elementary step, the rate is the rate constant multiplied by the reactant concentrations raised to their stoichiometric powers. For <code>2 A -> B</code>, the reaction rate is <var>v</var> = <var>k</var>[A]<sup>2</sup>, so d[A]/d<var>t</var> = −2<var>v</var> and d[B]/d<var>t</var> = <var>v</var>. This convention matters when entering a measured rate constant.</p><p>The model assumes a well-mixed system at constant volume and fixed rate constants. It does not infer rate laws for overall reactions, check elemental balance, or include diffusion, temperature changes, or stochastic effects. For physical concentration models, use consistent seconds and mol/L units; a reaction of total order <var>n</var> needs <var>k</var> in (mol/L)<sup>1−n</sup> s<sup>−1</sup>.</p><p>Write a reversible step with <code>&lt;-></code> to get separate forward and reverse constants. Repeated reactants are combined: <code>A + A</code> means <code>2 A</code>. Use <code>0 -> A</code> for a constant source and <code>A -> 0</code> for a first-order sink. Lines can contain <code># comments</code>. Charged species should use labels such as <code>H_plus</code>; the plus sign separates reactants. Limits: 32 species, 80 one-way steps, and 2,001 output points.</p><p>Numerical results are approximate. A calculation that cannot meet the tolerance or reaches a time limit stops with a message instead of displaying an incomplete result. The concentration sum is not generally conserved: for dimerization, for example, [A] + 2[B] is the conserved quantity.</p><p>This browser version restores the workflow and teaching examples of the group’s original R/Shiny direct-kinetics solver. <a href=\"https://kpp.readthedocs.io/en/stable/num_methods/rosenbrock-methods.html\" target=\"_blank\" rel=\"noopener noreferrer\">ROS-2 method reference</a>.</p></details>\n  <noscript>This solver needs JavaScript enabled. It runs locally and does not require an account.</noscript>\n</div>\n";
+  const placeholder=document.querySelector('.tg-kinetics-model');
+  if(placeholder && markup) { placeholder.innerHTML=markup; }
+  const app=document.getElementById('kinetics-app'); if(!app) return;
+  const el=id=>document.getElementById('kin-'+id);
+  const node=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;};
+  const examples={
+    lotka:{mechanism:'Prey -> 2 Prey\nPrey + Predator -> 2 Predator\nPredator -> 0',rates:[1,1,1],initial:{Prey:1.5,Predator:1},end:40,points:1501,units:'scaled',phase:['Prey','Predator']},
+    brusselator:{mechanism:'0 -> X\nX -> 0\nX -> Y\n2 X + Y -> 3 X',rates:[1,1,3,1],initial:{X:1,Y:1},end:50,points:1501,units:'scaled',phase:['X','Y']},
+    oregonator:{mechanism:'Y -> X\nX + Y -> 0\nX -> 2 X + Z\n2 X -> 0\nZ -> Y',rates:[0.04,1,1,0.5,0.05],initial:{X:0.2,Y:0.1,Z:0.1},end:300,points:1501,units:'scaled',phase:['X','Z']},
+    chirality:{mechanism:'A + S -> 2 S\nA + R -> 2 R\nR + S -> D',rates:[1,1,100],initial:{A:1,S:0.1,R:0.10001,D:0},start:0,end:10,points:401,rtol:1e-8},
+    consecutive:{mechanism:'A -> B\nB -> C',rates:[1,1],initial:{A:1,B:0,C:0}},
+    equilibrium:{mechanism:'A <-> B',rates:[1,1],initial:{A:1,B:0}},
+    parallel:{mechanism:'A -> B\nA -> C',rates:[1,1],initial:{A:1,B:0,C:0}},
+    enzyme:{mechanism:'E + S <-> ES\nES -> E + P',rates:[1,1,1],initial:{E:1,S:1,ES:0,P:0}},
+    dimer:{mechanism:'2 A -> B',rates:[1],initial:{A:1,B:0}},
+    stiff:{mechanism:'A -> B\nB -> C',rates:[10000,1],initial:{A:1,B:0,C:0}}
+  };
+  const scenarios={
+    consecutive:[
+      {label:'First step faster',changes:{rates:[10,1]},description:'k₁ = 10 and k₂ = 1: A quickly becomes B. The intermediate accumulates, then slowly drains into C.'},
+      {label:'Second step faster',changes:{rates:[1,10]},description:'k₁ = 1 and k₂ = 10: B is consumed almost as soon as it forms, so its peak stays small.'},
+      {label:'Comparable rates',changes:{rates:[1,1]},description:'k₁ = k₂ = 1: B rises and falls on comparable time scales, with its maximum at 1 s.'}
+    ],
+    equilibrium:[
+      {label:'Equal balance',changes:{},description:'Equal forward and reverse constants: starting from A alone, both concentrations approach 0.5 mol/L.'},
+      {label:'Favor B',changes:{rates:[4,1]},description:'Forward rate constant 4, reverse 1: the equilibrium ratio B/A is 4, giving A = 0.2 and B = 0.8 mol/L.'},
+      {label:'Favor A',changes:{rates:[1,4],initial:{A:0,B:1}},description:'Start from B, with forward constant 1 and reverse 4. The mixture approaches A = 0.8 and B = 0.2 mol/L.'}
+    ],
+    parallel:[
+      {label:'Equal branches',changes:{},description:'Both pathway constants are 1: the reacted A is divided equally between B and C.'},
+      {label:'Favor B',changes:{rates:[3,1]},description:'The A-to-B constant is three times larger: three quarters of reacted A becomes B.'},
+      {label:'Favor C',changes:{rates:[1,3]},description:'The A-to-C constant is three times larger: three quarters of reacted A becomes C.'}
+    ],
+    enzyme:[
+      {label:'Comparable E and S',changes:{},description:'E₀ = S₀ = 1 mol/L: follow binding, turnover, and the return of free enzyme as substrate runs out.'},
+      {label:'Little enzyme',changes:{initial:{E:0.01},end:1000,points:1501},description:'E₀ = 0.01 mol/L with S₀ = 1: product formation takes much longer. The time window expands to 1,000 s.'},
+      {label:'Substrate excess',changes:{initial:{E:0.1,S:10},end:200,points:1001},description:'S₀ = 10 and E₀ = 0.1 mol/L: much of the enzyme starts out bound after the short binding transient. Watch ES decline as substrate is depleted over 200 s.'}
+    ],
+    dimer:[
+      {label:'Reference concentration',changes:{},description:'A₀ = 1 mol/L and k = 1: A reaches half its initial concentration at 0.5 s. Two A units form each B.'},
+      {label:'Double A',changes:{initial:{A:2}},description:'A₀ = 2 mol/L: the initial reaction rate is four times larger and the half-life falls to 0.25 s.'},
+      {label:'Half A',changes:{initial:{A:0.5}},description:'A₀ = 0.5 mol/L: the initial reaction rate is one quarter of the reference, and the half-life increases to 1 s.'}
+    ],
+    stiff:[
+      {label:'Full reaction',changes:{},description:'k₁ = 10,000 and k₂ = 1: the initial burst is almost invisible on this 10 s view; the slow loss of B dominates.'},
+      {label:'Resolve the fast step',changes:{end:0.002,points:1001},description:'The same rate constants, viewed over 0.002 s: resolve A disappearing and B forming before much C accumulates.'},
+      {label:'Less separated rates',changes:{rates:[10,1]},description:'Reduce k₁ to 10 while keeping k₂ = 1: both the rise and fall of B become visible over 10 s.'}
+    ],
+    chirality:[
+      {label:'Tiny R excess',changes:{},description:'R₀ = 0.10001 and S₀ = 0.1: symmetric autocatalysis plus strong mutual inhibition amplifies the tiny initial R excess.'},
+      {label:'Tiny S excess',changes:{initial:{R:0.1,S:0.10001}},description:'Reverse the initial imbalance: S is now amplified. The rate constants remain identical for the two hands.'},
+      {label:'Exactly racemic',changes:{initial:{R:0.1,S:0.1}},description:'R₀ = S₀ = 0.1: the deterministic equations preserve the symmetry, so enantiomeric excess stays zero.'},
+      {label:'No mutual inhibition',changes:{rates:[1,1,0]},description:'Turn off R + S → D. Autocatalysis preserves the initial R/S ratio, so the tiny initial enantiomeric excess is not amplified.'}
+    ],
+    lotka:[
+      {label:'Small cycle',changes:{},description:'Prey₀ = 1.5 and Predator₀ = 1: predator growth follows the prey peak, tracing a closed orbit around (1, 1).'},
+      {label:'Larger cycle',changes:{initial:{Prey:3}},description:'Increase Prey₀ to 3. The orbit is larger and has a different period; it does not converge to the smaller orbit.'},
+      {label:'Balanced populations',changes:{initial:{Prey:1,Predator:1}},description:'Start exactly at (1, 1): reproduction, predation, and predator loss balance. Both time curves are flat and the phase trajectory is a point.'}
+    ],
+    brusselator:[
+      {label:'Sustained oscillations',changes:{},description:'A = 1, B = 3: the steady state is unstable and the trajectory approaches a repeating limit cycle.'},
+      {label:'Damped oscillations',changes:{rates:[1,1,1.5,1]},description:'Lower B to 1.5, below the threshold 2: oscillations decay toward the steady state X = 1, Y = 1.5.'},
+      {label:'Different starting point',changes:{initial:{X:3,Y:3}},description:'Keep A = 1 and B = 3 but start at X = Y = 3. After a different transient, the trajectory approaches the same limit cycle.'}
+    ],
+    oregonator:[
+      {label:'Repeated BZ pulses',changes:{},description:'The reference scaled model uses a Z-to-Y feedback constant of 0.05. After the transient, pulses repeat roughly every 69 time units.'},
+      {label:'Faster feedback',changes:{rates:[0.04,1,1,0.5,0.1]},description:'Double the Z-to-Y constant to 0.1: the model still oscillates, with a shorter period of roughly 48 scaled time units.'},
+      {label:'Damped pulses',changes:{rates:[0.04,1,1,0.5,0.2],end:400,points:2001},description:'Increase the Z-to-Y constant to 0.2: the pulses decay toward a steady state. The view extends to 400 scaled time units.'}
+    ]
+  };
+  function scenarioConfig(key,index){const base=examples[key],changes=scenarios[key][index].changes;return {...base,...changes,initial:{...base.initial,...changes.initial}};}
+  function sameModel(a,b){
+    try{const x=Kinetics.compile(a),y=Kinetics.compile(b);return (a.units==='scaled')===(b.units==='scaled')&&signature(x)===signature(y)&&JSON.stringify(x.species)===JSON.stringify(y.species)&&JSON.stringify(x.rates)===JSON.stringify(y.rates)&&JSON.stringify(x.initial)===JSON.stringify(y.initial)&&x.start===y.start&&x.end===y.end&&x.points===y.points&&x.rtol===y.rtol;}catch{return false;}
+  }
+  function normalizedPreset(c){return {start:0,end:10,points:401,rtol:1e-8,atol:1e-12,...c};}
+  function renderScenarios(){
+    el('scenarios').hidden=!activeExample;if(!activeExample)return;
+    el('scenario-buttons').replaceChildren();
+    scenarios[activeExample].forEach((item,index)=>{const button=node('button',item.label,{type:'button','aria-pressed':String(index===activeScenario)});button.addEventListener('click',()=>{load(scenarioConfig(activeExample,index),activeExample);el('scenario-buttons').children[index]?.focus({preventScroll:true});});el('scenario-buttons').append(button);});
+    el('scenario-description').textContent=activeScenario===null?'Choose a scenario to set the rates, initial values, and time window, then calculate automatically.':scenarios[activeExample][activeScenario].description;
+  }
+  function setCustomMode(value){
+    customMode=value;el('custom-guide').hidden=!value;app.classList.toggle('kin-custom-mode',value);
+    if(value){activeExample=null;activeScenario=null;app.querySelectorAll('.kin-example-note').forEach(n=>n.hidden=true);renderScenarios();}
+  }
+  function openCustomEditor(){
+    if(compareMode)el('compare').click();
+    setCustomMode(true);el('input-panel').open=true;el('mechanism-panel').open=true;app.classList.remove('kin-inputs-folded');
+    el('input-panel').scrollIntoView({block:'start',behavior:'smooth'});el('mechanism').focus({preventScroll:true});
+  }
+  function markCustom(){
+    activeScenario=null;if(builtText!==el('mechanism').value)setCustomMode(true);renderScenarios();invalidate();
+    el('run').disabled=!el('mechanism').value.trim();el('setup').disabled=!el('mechanism').value.trim();
+  }
+  const colors=['#315d25','#a62c58','#175dab','#a34f08','#7045a0','#007976','#9b2830','#525b67'];
+  const dashes=['','9 4','3 3','12 3 3 3'];
+  let customMode=false,activeScenario=null,compareMode=false,savedPanels=null,phaseExample=null,activeExample=null,chiral=false,parsed=null,builtText='',rateInputs=[],initialInputs=new Map(),result=null,worker=null,workerURL=null,watchdog=null,visible=[],svg=null,plot=null,phaseSvg=null,phasePlot=null;
+  function stop() {if(worker)worker.terminate();worker=null;clearTimeout(watchdog);if(workerURL)URL.revokeObjectURL(workerURL);workerURL=null;el('run').disabled=false;el('stop').hidden=true;}
+  function invalidate(){stop();app.querySelectorAll('.kin-example-note').forEach(n=>n.hidden=true);result=null;svg=null;el('output').hidden=true;el('error').hidden=true;el('status').textContent='Inputs changed. Calculate to update the results.';}
+  function error(message){stop();result=null;el('output').hidden=true;el('error').textContent=message;el('error').hidden=false;el('status').textContent='Calculation not completed.';}
+  const signature=model=>JSON.stringify(model.reactions.map(r=>r.label).sort());
+  function showExampleNote(){
+    if(customMode){setCustomMode(true);return;}
+    const current=parsed?signature(parsed):null;
+    if(!activeExample || signature(Kinetics.parse(examples[activeExample].mechanism))!==current){
+      activeExample=Object.keys(examples).find(key=>signature(Kinetics.parse(examples[key].mechanism))===current)||null;
+    }
+    app.querySelectorAll('.kin-example-note').forEach(n=>n.hidden=n.dataset.example!==activeExample);renderScenarios();
+  }
+  const scaled=()=>el('units').value==='scaled';
+  const concentrationUnit=()=>scaled()?'scaled units':'mol/L';
+  const timeUnit=()=>scaled()?'time units':'s';
+  function updateUnits(){
+    el('conc-unit').textContent='('+concentrationUnit()+')';el('initial-heading').textContent=scaled()?'Initial values':'Initial concentrations';
+    el('start-label').textContent='Start time ('+timeUnit()+')';el('end-label').textContent='End time ('+timeUnit()+')';
+    el('results-title').textContent=scaled()?'Scaled variables over time':'Concentration over time';
+    app.querySelector('.kin-table caption').textContent=scaled()?'Values in scaled units':'Concentrations in mol/L';
+    app.querySelectorAll('.kin-value-unit').forEach(n=>n.textContent=concentrationUnit());
+    app.querySelectorAll('.kin-rate-unit').forEach((n,i)=>{n.replaceChildren();if(scaled()){n.textContent='scaled';return;}const order=parsed.reactions[i].order;if(order!==1)n.append('(mol/L)',node('sup',String(1-order)),' ');n.append('s',node('sup','−1'));});
+  }
+  function setup(config) {
+    const next=Kinetics.parse(el('mechanism').value),oldRates=new Map();
+    if(parsed)parsed.reactions.forEach((r,i)=>oldRates.set(r.label,rateInputs[i]?.value));
+    const oldInitial=new Map([...initialInputs].map(([s,input])=>[s,input.value]));
+    chiral=JSON.stringify(next.reactions.map(r=>r.label).sort())===JSON.stringify(['A + S → 2 S','A + R → 2 R','R + S → D'].sort());
+    parsed=next;showExampleNote();builtText=el('mechanism').value;rateInputs=[];initialInputs=new Map();el('rates').replaceChildren();el('initial').replaceChildren();
+    parsed.reactions.forEach((r,i)=>{
+      const div=node('div',undefined,{class:'kin-rate'}),label=node('label',(i+1)+'. '+r.label,{class:'kin-rate-label',for:'kin-rate-'+i});
+      const law=node('p',undefined,{class:'kin-rate-law'});
+      law.append(node('var','v'),node('sub',String(i+1)),' = ',node('var','k'),node('sub',String(i+1)));
+      r.reactants.forEach(([j,c])=>{law.append('['+parsed.species[j]+']');if(c>1)law.append(node('sup',String(c)));});
+      const input=node('input',undefined,{id:'kin-rate-'+i,type:'number',min:'0',step:'any','aria-label':'Rate constant k'+(i+1)});
+      input.value=config?.rates?.[i]??oldRates.get(r.label)??1;input.addEventListener('input',markCustom);rateInputs.push(input);
+      const line=node('div',undefined,{class:'kin-rate-input'}),unit=node('span',undefined,{class:'kin-rate-unit'});
+      if(r.order!==1){unit.append('(mol/L)',node('sup',String(1-r.order)),' ');}unit.append('s',node('sup','−1'));
+      line.append(input,unit);div.append(label,law,line);el('rates').append(div);
+    });
+    parsed.species.forEach((s,i)=>{
+      const label=node('label',s,{for:'kin-initial-'+i}),input=node('input',undefined,{id:'kin-initial-'+i,type:'number',min:'0',step:'any','aria-label':'Initial concentration of '+s});
+      input.value=config?.initial?.[s]??oldInitial.get(s)??(i===0?1:0);input.addEventListener('input',markCustom);label.append(input);el('initial').append(label);initialInputs.set(s,input);
+    });el('model-fields').hidden=false;el('setup').disabled=false;updateUnits();
+  }
+  function config(){
+    if(builtText!==el('mechanism').value)setup();
+    const c={version:1,units:el('units').value,example:activeExample,mechanism:el('mechanism').value,rates:rateInputs.map(n=>n.value),initial:Object.fromEntries([...initialInputs].map(([s,n])=>[s,n.value])),start:el('start').value,end:el('end').value,points:el('points').value,rtol:el('accuracy').value,atol:1e-12};
+    const m=Kinetics.compile(c);return {...c,rates:m.rates,initial:Object.fromEntries(m.species.map((s,i)=>[s,m.initial[i]])),start:m.start,end:m.end,points:m.points,rtol:m.rtol};
+  }
+  function load(c,key=null){
+    setCustomMode(!key);activeExample=key;activeScenario=null;invalidate();el('units').value=c.units==='scaled'?'scaled':'physical';el('mechanism').value=c.mechanism;setup(c);el('start').value=c.start??0;el('end').value=c.end??10;el('points').value=c.points??401;
+    el('accuracy').value=String(c.rtol??1e-8);el('log').checked=false;
+    if(activeExample){el('example').value=activeExample;const match=scenarios[activeExample].findIndex((_,i)=>sameModel(normalizedPreset(c),normalizedPreset(scenarioConfig(activeExample,i))));activeScenario=match<0?null:match;}renderScenarios();run();
+  }
+  function run(){
+    invalidate();let c;try{c=config();}catch(e){error(e.message);return;}
+    showExampleNote();el('status').textContent='Calculating…';el('run').disabled=true;el('stop').hidden=false;
+    try{
+      if(window.KINETICS_WORKER_SOURCE){workerURL=URL.createObjectURL(new Blob([window.KINETICS_WORKER_SOURCE],{type:'text/javascript'}));worker=new Worker(workerURL);}
+      else worker=new Worker(new URL('kinetics-worker.js',scriptURL));
+      watchdog=setTimeout(()=>error('Calculation timed out. Shorten the interval or simplify the mechanism.'),23000);
+      worker.onmessage=event=>{stop();if(event.data.error){error(event.data.error);return;}result=event.data.result;visible=result.species.map(()=>true);el('error').hidden=true;el('output').hidden=false;el('status').textContent='Calculated '+result.species.length+' species across '+result.times.length+' output times.';el('time').max=String(result.times.length-1);el('time').value='0';legend();preparePhase();draw();drawPhase();inspect();const s=result.stats;el('diagnostics').textContent=s.accepted.toLocaleString()+' adaptive steps · '+s.rejected.toLocaleString()+' rejected steps · '+Math.round(s.elapsedMs)+' ms · relative tolerance '+s.rtol+'; absolute tolerance '+s.atol+' '+concentrationUnit()+'.'+(s.clipped?' Tiny negative roundoff was set to zero (total '+s.clipped.toExponential(2)+' '+concentrationUnit()+').':'');};
+      worker.onerror=()=>error('The calculation worker could not start. Reload the page, or use the downloadable offline version in a current browser.');
+      worker.postMessage(c);
+    }catch(e){error('Could not start the local calculation: '+e.message);}
+  }
+  const fmt=v=>v===0?'0':(Math.abs(v)<.0001||Math.abs(v)>=100000? v.toExponential(3):Number(v.toPrecision(5)).toString());
+  function legend(){el('legend').replaceChildren();result.species.forEach((s,i)=>{const label=node('label'),check=node('input',undefined,{type:'checkbox','aria-label':'Show '+s});check.checked=true;check.addEventListener('change',()=>{visible[i]=check.checked;draw();inspect();});const swatch=node('span',undefined,{class:'kin-swatch'});swatch.style.borderColor=colors[i%colors.length];swatch.style.borderTopStyle=i%4===0?'solid':i%4===2?'dotted':'dashed';label.append(check,swatch,s);el('legend').append(label);});}
+  function draw(){
+    if(!result)return;const NS='http://www.w3.org/2000/svg';
+    const sn=(tag,attrs={},text)=>{const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))n.setAttribute(k,String(v));if(text!==undefined)n.textContent=text;return n;};
+    const W=Math.max(300,Math.min(800,el('chart').clientWidth||800)),H=compareMode?340:(W<600?380:460),L=W<600?76:90,R=24,T=25,B=75,wi=W-L-R,hi=H-T-B,log=el('log').checked;
+    let max=0,min=Infinity;result.values.forEach(row=>row.forEach((v,i)=>{if(visible[i]){max=Math.max(max,v);if(v>0)min=Math.min(min,v);}}));
+    const noPositive=max===0;let lo=log&&!noPositive?Math.floor(Math.log10(min)):0,upper=log&&!noPositive?Math.ceil(Math.log10(max)):Math.max(max>Number.MAX_VALUE/1.08?max:max*1.08,1e-12);
+    if(log&&upper<=lo)upper=lo+1;if(log&&noPositive){lo=-1;upper=0;}
+    const x=t=>L+(t-result.times[0])/(result.times.at(-1)-result.times[0])*wi;
+    const y=v=>T+(upper-(log?Math.log10(v):v))/(upper-lo)*hi;
+    svg=sn('svg',{viewBox:'0 0 '+W+' '+H,xmlns:NS,role:'img','aria-labelledby':'kin-plot-title kin-plot-desc'});
+    svg.append(sn('title',{id:'kin-plot-title'},scaled()?'Scaled variables over time':'Concentrations over time'),sn('desc',{id:'kin-plot-desc'},'Mass-action calculation. Exact values are available in the table and CSV download.'),sn('rect',{width:W,height:H,fill:'#fff'}));
+    const defs=sn('defs'),clip=sn('clipPath',{id:'kin-plot-clip'});clip.append(sn('rect',{x:L,y:T,width:wi,height:hi}));defs.append(clip);svg.append(defs);
+    const label=(text,xx,yy,anchor='middle')=>sn('text',{x:xx,y:yy,'text-anchor':anchor,'font-size':15,'font-family':'Arial, sans-serif',fill:'#38443b'},text);
+    const ticks=W<420?3:5;for(let i=0;i<=ticks;i++){const yy=T+hi-i*hi/ticks,val=lo+(upper-lo)*i/ticks;svg.append(sn('line',{x1:L,y1:yy,x2:W-R,y2:yy,stroke:'#e1e7de'}),label(log?fmt(10**val):fmt(val),L-12,yy+5,'end'));const t=result.times[0]+(result.times.at(-1)-result.times[0])*i/ticks;svg.append(label(fmt(t),x(t),H-B+29));}
+    svg.append(sn('path',{d:'M'+L+' '+T+' V'+(H-B)+' H'+(W-R),fill:'none',stroke:'#6d796e','stroke-width':1.2}),label('Time ('+timeUnit()+')',L+wi/2,H-14));
+    const ylabel=label(scaled()?'Scaled value':'Concentration (mol/L)',22,T+hi/2);ylabel.setAttribute('transform','rotate(-90 22 '+(T+hi/2)+')');svg.append(ylabel);
+    result.species.forEach((s,i)=>{if(!visible[i])return;let d='',pen=false;result.values.forEach((row,j)=>{if(log&&row[i]<=0){pen=false;return;}d+=(pen?' L':' M')+x(result.times[j]).toFixed(2)+' '+y(row[i]).toFixed(2);pen=true;});const path=sn('path',{d,fill:'none',stroke:colors[i%colors.length],'stroke-width':2.6,'stroke-dasharray':dashes[i%4],'clip-path':'url(#kin-plot-clip)'});path.append(sn('title',{},s));svg.append(path);});
+    if(!visible.some(Boolean))svg.append(label('Select a species above to show a curve.',L+wi/2,T+hi/2));
+    else if(log&&noPositive)svg.append(label('No positive concentrations to show on a log axis.',L+wi/2,T+hi/2));
+    const cursor=sn('line',{id:'kin-plot-cursor',x1:L,x2:L,y1:T,y2:H-B,stroke:'#606a60','stroke-dasharray':'3 4'});svg.append(cursor);
+    svg.addEventListener('pointermove',event=>{const box=svg.getBoundingClientRect(),xx=(event.clientX-box.left)/box.width*W;el('time').value=String(Math.max(0,Math.min(result.times.length-1,Math.round((xx-L)/wi*(result.times.length-1)))));inspect();});
+    plot={x,cursor,W,H,L};el('chart').replaceChildren(svg);el('log-note').hidden=!log;
+  }
+  function inspect(){if(!result)return;const index=Number(el('time').value),t=result.times[index];el('time-value').textContent=fmt(t)+' '+timeUnit();el('column-time').textContent='At '+fmt(t)+' '+timeUnit();el('table-body').replaceChildren();result.species.forEach((s,i)=>{const row=node('tr');row.append(node('th',s,{scope:'row'}),node('td',fmt(result.values[0][i])),node('td',fmt(result.values[index][i])),node('td',fmt(result.values.at(-1)[i])));el('table-body').append(row);});el('ee').hidden=!chiral;if(chiral){const r=result.species.indexOf('R'),s=result.species.indexOf('S'),ee=row=>{const sum=row[r]+row[s];if(sum===0)return 'Undefined (R + S = 0)';const value=Number((100*(row[r]-row[s])/sum).toFixed(6));return (value>0?'+':'')+Number(value.toPrecision(5))+'%';};el('ee-initial').textContent=ee(result.values[0]);el('ee-current').textContent=ee(result.values[index]);el('ee-final').textContent=ee(result.values.at(-1));el('ee-time').textContent='At '+fmt(t)+' '+timeUnit();}if(plot){plot.cursor.setAttribute('x1',plot.x(t));plot.cursor.setAttribute('x2',plot.x(t));}if(phasePlot){const row=result.values[index];phasePlot.marker.setAttribute('cx',phasePlot.x(row[phasePlot.xi]));phasePlot.marker.setAttribute('cy',phasePlot.y(row[phasePlot.yi]));phasePlot.marker.setAttribute('visibility',index<phasePlot.start?'hidden':'visible');}}
+  function preparePhase(){
+    const prior=[el('phase-x').value,el('phase-y').value],defaults=examples[activeExample]?.phase||prior;
+    ['phase-x','phase-y'].forEach((id,axis)=>{el(id).replaceChildren();result.species.forEach(name=>el(id).append(node('option',name,{value:name})));el(id).value=result.species.includes(defaults[axis])?defaults[axis]:result.species[Math.min(axis,result.species.length-1)];});
+    el('phase-trim').checked=false;el('phase').hidden=result.species.length<2;app.classList.toggle('kin-single-species',result.species.length<2);if(compareMode||phaseExample!==activeExample)el('phase').open=compareMode||['lotka','brusselator','oregonator'].includes(activeExample);phaseExample=activeExample;phasePlot=null;
+  }
+  function drawPhase(){
+    if(!result||!el('phase').open||el('phase').hidden){phasePlot=null;return;}
+    const NS='http://www.w3.org/2000/svg',sn=(tag,attrs={},text)=>{const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))n.setAttribute(k,String(v));if(text!==undefined)n.textContent=text;return n;};
+    const xi=result.species.indexOf(el('phase-x').value),yi=result.species.indexOf(el('phase-y').value),start=el('phase-trim').checked?Math.floor(result.values.length/2):0,rows=result.values.slice(start);
+    const W=Math.max(300,Math.min(800,el('phase-chart').clientWidth||800)),H=compareMode?340:(W<500?360:430),L=78,R=25,T=25,B=72,wi=W-L-R,hi=H-T-B;
+    const upper=i=>{const max=Math.max(...rows.map(row=>row[i]));return Math.max(max>Number.MAX_VALUE/1.08?max:max*1.08,1e-12);};const xmax=upper(xi),ymax=upper(yi),x=v=>L+(v/xmax)*wi,y=v=>T+hi-(v/ymax)*hi;
+    phaseSvg=sn('svg',{viewBox:'0 0 '+W+' '+H,xmlns:NS,role:'img','aria-labelledby':'kin-phase-title kin-phase-desc'});
+    phaseSvg.append(sn('title',{id:'kin-phase-title'},result.species[yi]+' versus '+result.species[xi]),sn('desc',{id:'kin-phase-desc'},'Phase-plane trajectory connecting concentrations at successive output times. Green circle marks the start, magenta diamond the end, and black dot the selected time.'),sn('rect',{width:W,height:H,fill:'#fff'}));
+    const defs=sn('defs'),clip=sn('clipPath',{id:'kin-phase-clip'});clip.append(sn('rect',{x:L,y:T,width:wi,height:hi}));defs.append(clip);phaseSvg.append(defs);
+    const label=(text,xx,yy,anchor='middle')=>sn('text',{x:xx,y:yy,'text-anchor':anchor,'font-size':14,'font-family':'Arial, sans-serif',fill:'#38443b'},text),ticks=W<420?3:5;
+    for(let j=0;j<=ticks;j++){const xx=L+wi*j/ticks,yy=T+hi-hi*j/ticks;phaseSvg.append(sn('line',{x1:xx,x2:xx,y1:T,y2:T+hi,stroke:'#e1e7de'}),sn('line',{x1:L,x2:L+wi,y1:yy,y2:yy,stroke:'#e1e7de'}),label(fmt(xmax*j/ticks),xx,H-B+25),label(fmt(ymax*j/ticks),L-10,yy+5,'end'));}
+    phaseSvg.append(sn('path',{d:'M'+L+' '+T+' V'+(T+hi)+' H'+(L+wi),fill:'none',stroke:'#6d796e'}),label(result.species[xi]+' ('+concentrationUnit()+')',L+wi/2,H-14));
+    const yl=label(result.species[yi]+' ('+concentrationUnit()+')',20,T+hi/2);yl.setAttribute('transform','rotate(-90 20 '+(T+hi/2)+')');phaseSvg.append(yl);
+    const d=rows.map((row,j)=>(j?'L':'M')+x(row[xi]).toFixed(3)+' '+y(row[yi]).toFixed(3)).join(' ');phaseSvg.append(sn('path',{d,fill:'none',stroke:'#486c36','stroke-width':2,'clip-path':'url(#kin-phase-clip)'}));
+    phaseSvg.append(sn('circle',{cx:x(rows[0][xi]),cy:y(rows[0][yi]),r:5,fill:'#315d25',stroke:'#fff','stroke-width':1.5}));
+    const ex=x(rows.at(-1)[xi]),ey=y(rows.at(-1)[yi]);phaseSvg.append(sn('path',{d:'M'+ex+' '+(ey-6)+' L'+(ex+6)+' '+ey+' L'+ex+' '+(ey+6)+' L'+(ex-6)+' '+ey+' Z',fill:'#a62c58',stroke:'#fff','stroke-width':1}));
+    const marker=sn('circle',{r:4.5,fill:'#222',stroke:'#fff','stroke-width':1.5,'clip-path':'url(#kin-phase-clip)'});phaseSvg.append(marker);phasePlot={x,y,xi,yi,start,marker};el('phase-chart').replaceChildren(phaseSvg);
+  }
+  ['phase-x','phase-y','phase-trim'].forEach(id=>el(id).addEventListener('change',()=>{drawPhase();inspect();}));
+  el('phase').addEventListener('toggle',()=>{drawPhase();inspect();});
+  el('phase-download').addEventListener('click',()=>{if(phaseSvg)download('kinetics-phase-plane.svg','image/svg+xml',new XMLSerializer().serializeToString(phaseSvg));});
+  function download(name,type,text){const url=URL.createObjectURL(new Blob([text],{type})),a=node('a',undefined,{href:url,download:name});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  el('custom').addEventListener('click',openCustomEditor);
+  el('blank').addEventListener('click',()=>{
+    invalidate();setCustomMode(true);parsed=null;builtText='';rateInputs=[];initialInputs=new Map();
+    el('mechanism').value='';el('rates').replaceChildren();el('initial').replaceChildren();el('model-fields').hidden=true;
+    el('units').value='physical';el('start').value='0';el('end').value='10';el('points').value='401';el('accuracy').value='1e-8';el('log').checked=false;updateUnits();
+    el('run').disabled=true;el('setup').disabled=true;el('status').textContent='Write your reactions, then select Set up mechanism.';
+    el('mechanism-panel').open=true;el('mechanism').focus();
+  });
+  el('setup').addEventListener('click',()=>{invalidate();try{setup();el('status').textContent='Mechanism ready. Set the rates and initial concentrations, then calculate.';}catch(e){error(e.message);}});
+  el('load-example').addEventListener('click',()=>load(examples[el('example').value],el('example').value));
+  el('run').addEventListener('click',run);el('stop').addEventListener('click',()=>{invalidate();el('status').textContent='Calculation stopped.';});
+  ['mechanism','start','end','points','accuracy'].forEach(id=>el(id).addEventListener('input',markCustom));
+  el('units').addEventListener('change',()=>{markCustom();updateUnits();});
+  el('log').addEventListener('change',()=>{draw();inspect();});el('time').addEventListener('input',inspect);
+  el('save').addEventListener('click',()=>{try{download('kinetics-model.json','application/json',JSON.stringify(config(),null,2));}catch(e){error(e.message);}});
+  el('import').addEventListener('change',async()=>{const file=el('import').files[0];if(!file)return;try{if(file.size>100000)throw new Error('Choose a model file smaller than 100 KB.');const c=JSON.parse(await file.text());if(c.version!==1)throw new Error('Choose a version 1 JSON model saved by this solver.');Kinetics.compile(c);if(![1e-8,1e-6].includes(Number(c.rtol))||Number(c.atol)!==1e-12)throw new Error('Use the high or standard accuracy settings saved by this solver.');load(c,Object.prototype.hasOwnProperty.call(examples,c.example)?c.example:null);}catch(e){error('Cannot open this model: '+e.message);}finally{el('import').value='';}});
+  el('csv').addEventListener('click',()=>{if(result)download('kinetics-concentrations.csv','text/csv',[(scaled()?'time_scaled,':'time_s,')+result.species.map(s=>s+(scaled()?'_scaled':'_mol_per_L')).join(','),...result.times.map((t,i)=>[t,...result.values[i]].join(','))].join('\r\n')+'\r\n');});
+  el('svg').addEventListener('click',()=>{
+    if(!svg)return;const copy=svg.cloneNode(true),NS='http://www.w3.org/2000/svg',shown=result.species.map((s,i)=>visible[i]?{s,i}:null).filter(Boolean),columns=plot.W<600?2:4,rows=Math.ceil(shown.length/columns),height=plot.H+20+rows*24;
+    copy.setAttribute('viewBox','0 0 '+plot.W+' '+height);copy.querySelector('rect').setAttribute('height',height);copy.querySelector('#kin-plot-cursor')?.remove();
+    shown.forEach(({s,i},j)=>{const xx=30+(j%columns)*(plot.W-60)/columns,yy=plot.H+18+Math.floor(j/columns)*24,line=document.createElementNS(NS,'line'),text=document.createElementNS(NS,'text');for(const[k,v]of Object.entries({x1:xx,y1:yy-5,x2:xx+24,y2:yy-5,stroke:colors[i%colors.length],'stroke-width':2.6,'stroke-dasharray':dashes[i%4]}))line.setAttribute(k,v);for(const[k,v]of Object.entries({x:xx+30,y:yy,fill:'#38443b','font-size':13,'font-family':'Arial, sans-serif'}))text.setAttribute(k,v);text.textContent=s;copy.append(line,text);});
+    download('kinetics-plot.svg','image/svg+xml',new XMLSerializer().serializeToString(copy));
+  });
+  function redraw(){draw();drawPhase();inspect();}
+  el('time-panel').addEventListener('toggle',redraw);
+  el('input-panel').addEventListener('toggle',()=>{app.classList.toggle('kin-inputs-folded',!el('input-panel').open);redraw();});
+  el('compare').addEventListener('click',()=>{
+    compareMode=!compareMode;app.classList.toggle('kin-compare',compareMode);el('compare').setAttribute('aria-pressed',String(compareMode));el('compare').textContent=compareMode?'Return to editing view':'Compare plots';
+    const panels=[...app.querySelectorAll('.kin-example-note'),el('input-panel'),el('values'),el('phase-settings'),el('phase-guide'),el('time-panel'),el('phase')];
+    if(compareMode){savedPanels=panels.map(panel=>[panel,panel.open]);panels.forEach(panel=>panel.open=panel===el('time-panel')||panel===el('phase'));}
+    else{savedPanels?.forEach(([panel,open])=>panel.open=open);savedPanels=null;}
+    app.classList.toggle('kin-inputs-folded',!el('input-panel').open);redraw();
+    if(compareMode)el('plot-grid').scrollIntoView({block:'start',behavior:'smooth'});
+  });
+  if(window.ResizeObserver){let width=0;new ResizeObserver(()=>{const next=el('chart').clientWidth;if(result&&next&&Math.abs(width-next)>1){width=next;draw();drawPhase();inspect();}}).observe(el('chart'));}
+  if(!window.KINETICS_WORKER_SOURCE){const a=node('a','Download offline version',{href:new URL('kinetics-offline.html',scriptURL).href,download:'kinetics-offline.html',class:'kin-offline-link'});app.querySelector('.kin-toolbar').append(a);}
+  const requestedExample=new URL(location.href).searchParams.get('example');const initialExample=Object.prototype.hasOwnProperty.call(examples,requestedExample)?requestedExample:'consecutive';el('example').value=initialExample;load(examples[initialExample],initialExample);
+})();
+</script></body></html>

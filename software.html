@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head>
+<meta charset="utf-8">
+<title>Software and online tools · Talipov Lab</title>
+
+<meta name="theme-color" content="#008800"/>
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="assets/export/3171dd0679483c47b417.css"/>
+
+
+
+
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/group-logo.png" type="image/png">
+<link rel="stylesheet" href="assets/public.css">
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<script src="assets/public.js" defer></script>
+<script src="assets/katex/katex.min.js" defer></script>
+<script src="assets/katex/contrib/auto-render.min.js" defer></script>
+<script src="assets/math-render.js" defer></script>
+<link rel="canonical" href="https://talipovlab.github.io/software.html">
+<meta name="description" content="Computational chemistry, research, publications, and interactive teaching tools from the Talipov Lab at New Mexico State University.">
+<meta name="robots" content="index,follow">
+</head>
+<body id="group-site" class="tg-public">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead"><div class="wrap header-inner">
+<a class="brand" href="index.html"><img class="original-logo" src="assets/group-logo.png" width="64" height="64" alt="Talipov Lab emblem"><span><strong>Talipov Lab</strong><small>Computational Chemistry<br>New Mexico State University</small></span></a>
+<button class="menu-button" aria-controls="main-nav" aria-expanded="false">Menu</button>
+<nav id="main-nav" aria-label="Main navigation">
+<a href="research.html">Research</a><a href="people.html">People</a><a href="publications.html">Publications</a><a href="software.html" aria-current="page">Software</a><a href="teaching.html">Teaching</a><a href="resources.html">Resources</a><a href="join.html" class="nav-join">Join us</a></nav></div></header>
+<main id="main" class="dokuwiki"><div class="wrap">
+<div class="page">
+
+<div class="page-intro plugin_wrap"><div class="eyebrow plugin_wrap">
+<p>
+Scientific software
+</p>
+</div>
+<h1 class="sectionedit5" id="software_and_online_tools">Software and online tools</h1>
+<div class="lead plugin_wrap">
+<p>
+Build a chemical model, explore its equations, and make sense of computational results. Our tools connect quantum chemistry with chemical reasoning.
+</p>
+</div></div><div class="tool-feature plugin_wrap" id="kinetics"><div class="tg-block plugin_wrap">
+<p>
+<span class="tag ">Available · Runs in your browser</span>
+</p>
+
+<h2 class="sectionedit12" id="direct_kinetics_solver">Direct kinetics solver</h2>
+
+<p>
+Type a reaction mechanism, set rate constants and initial concentrations, and follow the concentration changes. The group’s original Shiny teaching tool is back as a self-contained browser application.
+</p>
+<div class="actions plugin_wrap">
+<p>
+<span class="button "><a href="kinetics.html" class="wikilink1" title="world:kinetics" data-wiki-id="world:kinetics">Open the kinetics solver</a></span>
+</p>
+</div></div><div class="tool-capabilities plugin_wrap">
+<h3 class="sectionedit17" id="from_mechanism_to_concentration_curves">From mechanism to concentration curves</h3>
+<ul>
+<li class="level1"><div class="li"> Elementary mass-action steps, reversible reactions, and stoichiometric coefficients.</div>
+</li>
+<li class="level1"><div class="li"> Consecutive, parallel, equilibrium, and enzyme-mechanism examples.</div>
+</li>
+<li class="level1"><div class="li"> Interactive plots, CSV results, and saved model files.</div>
+</li>
+<li class="level1"><div class="li"> No account or calculation server. Download a single file for offline use.</div>
+</li>
+</ul>
+</div></div><div class="tool-feature plugin_wrap" id="symvb"><div class="tg-block plugin_wrap">
+<p>
+<span class="tag ">Available · Open-source Python</span>
+</p>
+
+<h2 class="sectionedit22" id="symvb">symvb</h2>
+
+<p>
+Write valence-bond structures. Obtain symbolic Hamiltonian and overlap matrices. Explore how electron repulsion, orbital overlap, and resonance shape a bond.
+</p>
+<div class="actions plugin_wrap">
+<p>
+<span class="button "><a href="symvb.html" class="wikilink1" title="world:symvb" data-wiki-id="world:symvb">Run symvb &amp; worked examples</a></span>
+<span class="text-link "><a href="https://github.com/TalipovLab/symvb" class="urlextern" title="https://github.com/TalipovLab/symvb">Source &amp; documentation</a></span>
+<span class="text-link "><a href="https://pypi.org/project/symvb/" class="urlextern" title="https://pypi.org/project/symvb/">Install from PyPI</a></span>
+<span class="text-link "><a href="https://doi.org/10.1002/qua.70284" class="urlextern" title="https://doi.org/10.1002/qua.70284">Read the paper</a></span>
+</p>
+</div></div><div class="tool-capabilities plugin_wrap">
+<h3 class="sectionedit27" id="from_structures_to_insight">From structures to insight</h3>
+<ul>
+<li class="level1"><div class="li"> Define spin-resolved determinants and valence-bond structures.</div>
+</li>
+<li class="level1"><div class="li"> Build one- and two-electron matrix elements symbolically with SymPy.</div>
+</li>
+<li class="level1"><div class="li"> Solve for energies and structure weights, retaining orbital overlap.</div>
+</li>
+<li class="level1"><div class="li"> Learn with notebooks on H₂, allyl, (H₂)₂⁺, and benzene.</div>
+</li>
+</ul>
+</div></div><div class="tg-vb-model plugin_wrap">
+<p>
+Interactive H₂ model: enable JavaScript to adjust the parameters. At U = 4 and s = 0.25, the covalent contribution is 81.0% and the ionic contribution is 19.0%.
+</p>
+</div><div class="tool-start plugin_wrap"><div class="tg-block plugin_wrap">
+<h3 class="sectionedit34" id="start_with_a_two-electron_bond">Start with a two-electron bond</h3>
+
+<p>
+Install the package in a Python environment, then build the covalent and symmetric ionic singlet structures shown above.
+</p>
+<div class="tool-code plugin_wrap"><pre class="code">python -m pip install symvb</pre>
+</div>
+<p>
+The example returns symbolic matrices H and S. Lowercase orbital labels carry α spin; uppercase labels carry β spin. The parameters h, s, and U represent resonance, overlap, and on-site repulsion.
+</p>
+<div class="small plugin_wrap">
+<p>
+Tested with symvb 2.2.0. Python 3.8 or later; uses SymPy, NumPy, and SciPy. Designed for interpretable small-system models and teaching.
+</p>
+</div><div class="actions plugin_wrap">
+<p>
+<span class="text-link "><a href="https://github.com/TalipovLab/symvb/tree/master/notebooks" class="urlextern" title="https://github.com/TalipovLab/symvb/tree/master/notebooks">Worked notebooks</a></span>
+<span class="text-link "><a href="https://github.com/TalipovLab/symvb/blob/master/docs/recipes.md" class="urlextern" title="https://github.com/TalipovLab/symvb/blob/master/docs/recipes.md">Recipes</a></span>
+<span class="text-link "><a href="https://github.com/TalipovLab/symvb/blob/master/examples/h2_hubbard_bond.py" class="urlextern" title="https://github.com/TalipovLab/symvb/blob/master/examples/h2_hubbard_bond.py">Full H₂ example</a></span>
+</p>
+</div></div><div class="tool-code plugin_wrap"><pre class="code python"><span class="kw1">from</span> symvb <span class="kw1">import</span> Molecule<span class="sy0">,</span> FixedPsi<span class="sy0">,</span> System
+<span class="kw1">from</span> sympy <span class="kw1">import</span> symbols
+&nbsp;
+m <span class="sy0">=</span> Molecule<span class="br0">&#40;</span>
+    zero_ii<span class="sy0">=</span><span class="kw2">True</span><span class="sy0">,</span>
+    interacting_orbs<span class="sy0">=</span><span class="br0">&#91;</span><span class="st0">'ab'</span><span class="br0">&#93;</span><span class="sy0">,</span>
+    subst<span class="sy0">=</span><span class="br0">&#123;</span><span class="st0">'h'</span>: <span class="br0">&#40;</span><span class="st0">'H_ab'</span><span class="sy0">,</span><span class="br0">&#41;</span><span class="sy0">,</span> <span class="st0">'s'</span>: <span class="br0">&#40;</span><span class="st0">'S_ab'</span><span class="sy0">,</span><span class="br0">&#41;</span><span class="br0">&#125;</span><span class="sy0">,</span>
+    max_2e_centers<span class="sy0">=</span><span class="nu0">1</span><span class="sy0">,</span>
+<span class="br0">&#41;</span>
+cov <span class="sy0">=</span> FixedPsi<span class="br0">&#40;</span><span class="st0">'aB'</span><span class="br0">&#41;</span>
+cov.<span class="me1">add_str_det</span><span class="br0">&#40;</span><span class="st0">'bA'</span><span class="sy0">,</span> coef<span class="sy0">=</span><span class="nu0">1</span><span class="br0">&#41;</span>
+ion <span class="sy0">=</span> FixedPsi<span class="br0">&#40;</span><span class="st0">'aA'</span><span class="br0">&#41;</span>
+ion.<span class="me1">add_str_det</span><span class="br0">&#40;</span><span class="st0">'bB'</span><span class="sy0">,</span> coef<span class="sy0">=</span><span class="nu0">1</span><span class="br0">&#41;</span>
+bond <span class="sy0">=</span> System.<span class="me1">from_structures</span><span class="br0">&#40;</span>m<span class="sy0">,</span> <span class="br0">&#91;</span>cov<span class="sy0">,</span> ion<span class="br0">&#93;</span><span class="br0">&#41;</span>
+H<span class="sy0">,</span> S <span class="sy0">=</span> bond.<span class="me1">hamiltonian</span><span class="br0">&#40;</span><span class="br0">&#41;</span>
+U <span class="sy0">=</span> symbols<span class="br0">&#40;</span><span class="st0">'U'</span><span class="br0">&#41;</span>
+H <span class="sy0">=</span> H.<span class="me1">subs</span><span class="br0">&#40;</span><span class="br0">&#123;</span>symbols<span class="br0">&#40;</span><span class="st0">'T_aaaa'</span><span class="br0">&#41;</span>: U<span class="sy0">,</span>
+            symbols<span class="br0">&#40;</span><span class="st0">'T_bbbb'</span><span class="br0">&#41;</span>: U<span class="br0">&#125;</span><span class="br0">&#41;</span>
+<span class="kw1">print</span><span class="br0">&#40;</span>H<span class="br0">&#41;</span>
+<span class="kw1">print</span><span class="br0">&#40;</span>S<span class="br0">&#41;</span></pre>
+</div></div><div class="tool-row plugin_wrap" id="terse"><div class="tg-block plugin_wrap">
+<h2 class="sectionedit47" id="terse">TERSE</h2>
+
+<p>
+<span class="tag ">Legacy software · Archived</span>
+</p>
+</div><div class="tg-block plugin_wrap">
+<p>
+Turn quantum-chemistry output into browsable <abbr title="HyperText Markup Language">HTML</abbr> reports with molecular views. TERSE brings calculation summaries and structures together for reviewing completed calculations.
+</p>
+<ul>
+<li class="level1"><div class="li"> Parsers for Gaussian output, formatted checkpoints, XYZ geometries, and cube data.</div>
+</li>
+<li class="level1"><div class="li"> <abbr title="HyperText Markup Language">HTML</abbr> reporting with Jmol/JSmol molecular visualization.</div>
+</li>
+<li class="level1"><div class="li"> Source code and the original installation guide remain available for reference.</div>
+</li>
+</ul>
+<div class="tool-availability plugin_wrap">
+<p>
+The repository was archived in January 2026. Its installation instructions describe a legacy Python 2 setup and external visualization tools; they are not a current Python 3 installation guide.
+</p>
+</div><div class="actions plugin_wrap">
+<p>
+<span class="text-link "><a href="https://github.com/TalipovLab/terse" class="urlextern" title="https://github.com/TalipovLab/terse">Archived source</a></span>
+<span class="text-link "><a href="https://github.com/TalipovLab/terse/blob/master/INSTALL.txt" class="urlextern" title="https://github.com/TalipovLab/terse/blob/master/INSTALL.txt">Original installation guide</a></span>
+</p>
+</div></div></div><div class="tool-row plugin_wrap" id="pes-navigator"><div class="tg-block plugin_wrap">
+<h2 class="sectionedit58" id="pes_navigator">PES Navigator</h2>
+
+<p>
+<span class="tag ">In development</span>
+</p>
+</div><div class="tg-block plugin_wrap">
+<p>
+An interactive environment under development for exploring molecular geometries, optimization trajectories, and reaction pathways. The goal is to keep a molecular structure and its calculation history visible together as a pathway develops.
+</p>
+<div class="tool-availability plugin_wrap">
+<p>
+No public release is linked yet. Contact Marat to discuss the project or possible research collaborations.
+</p>
+</div>
+<p>
+<span class="text-link "><a href="mailto:talipovm@nmsu.edu" class="mail" title="&#116;&#97;&#108;&#105;&#112;&#111;&#118;&#109;&#64;&#110;&#109;&#115;&#117;&#46;&#101;&#100;&#117;">Ask about PES Navigator</a></span>
+</p>
+</div></div></div>
+</div></main>
+<footer class="footer"><div class="wrap"><div class="footer-grid">
+<div><p class="footer-name">Talipov Lab</p><p>Computational chemistry at New Mexico State University.<br>Department of Chemistry and Biochemistry · Las Cruces, NM</p></div>
+<div><h3>Explore</h3><div class="footer-links"><a href="research.html">Research</a><a href="people.html">People</a><a href="publications.html">Publications</a><a href="software.html">Software</a><a href="teaching.html">Teaching</a><a href="resources.html">Resources</a><a href="join.html">Join us</a></div></div>
+<div><h3>Get in touch</h3><p><a href="mailto:talipovm@nmsu.edu">talipovm@nmsu.edu</a><br><a href="https://chemistry.nmsu.edu/">NMSU Chemistry &amp; Biochemistry</a></p></div>
+</div><div class="footer-bottom"><span>© 2026 Talipov Lab</span><span><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> · Edited with DokuWiki · Hosted on GitHub Pages</span></div></div></footer>
+<div id="screen__mode" class="no"></div>
+</body></html>
