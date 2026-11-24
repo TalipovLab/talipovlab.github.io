@@ -804,3 +804,6 @@
 #group-site .narrative-graphic>p{margin:0}
 #group-site .narrative-graphic .figure-caption p{font:inherit;line-height:inherit;color:inherit;margin:0}
 #group-site .narrative-links>p{display:contents}
+
+/* Historical references remain readable after retiring unavailable hyperlinks. */
+#group-site .wrap_retired-reference{overflow-wrap:anywhere}
